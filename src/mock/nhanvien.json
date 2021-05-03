@@ -1,0 +1,41 @@
+[{
+  "ID_NHANVIEN": "001",
+  "TENNV": "Quản lý 1",
+  "DONVI": "001",
+  "VAITRO": "QLTN1"
+},{
+  "ID_NHANVIEN": "002",
+  "TENNV": "Quản lý 2",
+  "DONVI": "002",
+  "VAITRO": "QLTV1"
+},{
+  "ID_NHANVIEN": "003",
+  "TENNV": "Quản lý 3",
+  "DONVI": "003",
+  "VAITRO": "QLCM1"
+},{
+  "ID_NHANVIEN": "004",
+  "TENNV": "Tiếp tân 1",
+  "DONVI": "004",
+  "VAITRO": "TT1"
+},{
+  "ID_NHANVIEN": "005",
+  "TENNV": "Tài vụ 1",
+  "DONVI": "005",
+  "VAITRO": "TV1"
+},{
+  "ID_NHANVIEN": "006",
+  "TENNV": "Bác sĩ 1",
+  "DONVI": "006",
+  "VAITRO": "BS1"
+},{
+  "ID_NHANVIEN": "007",
+  "TENNV": "Bán thuốc 1",
+  "DONVI": "007",
+  "VAITRO": "BT1"
+},{
+  "ID_NHANVIEN": "008",
+  "TENNV": "Kế toán 1",
+  "DONVI": "008",
+  "VAITRO": "KT1"
+}]

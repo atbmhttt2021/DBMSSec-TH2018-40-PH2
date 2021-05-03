@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Quản lý bệnh viện|Nhân viên</title>
+  <%- include('../layouts/head'); -%>
+  <!-- Custom styles -->
+  <link href="styles/dashboard.css" rel="stylesheet">
+</head>
+
+<body>
+  <%- include('../layouts/cores'); -%>
+  <%- include('../layouts/navbar'); -%>
+    <div class="container-fluid">
+      <div class="row">
+        <%- include('../layouts/sidebar'); -%>
+          <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+            <% if (locals.error) { %>
+              <div>
+                <h6><%= error.message %></h6>
+              </div>
+            <% } %>
+            <% if (locals.list) { %>
+              <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
+                <h1 class="h4">Danh sách nhân viên</h1>
+              </div>
+
+              <div class="table-responsive">
+                <table id="table_id" class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th>ID_NHANVIEN</th>
+                      <th>TENNV</th>
+                      <th>DONVI</th>
+                      <th>VAITRO</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% for(let i=0; i<list.length; i++) { %>
+                      <tr>
+                        <td class="select-checkbox"></td>
+                        <td>
+                          <%= list[i].ID_NHANVIEN %>
+                        </td>
+                        <td>
+                          <%= list[i].TENNV %>
+                        </td>
+                        <td>
+                          <%= list[i].DONVI %>
+                        </td>
+                        <td>
+                          <%= list[i].VAITRO %>
+                        </td>
+                      </tr>
+                      <% } %>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="py-2">Đang chọn: 
+                <span id="selectedVal"></span>
+              </div>
+            <% } %>
+          </main>
+      </div>
+    </div>
+
+    <%- include('../layouts/bottom'); -%>
+
+    <script>
+      $(document).ready(function () {    
+        $('#table_id tbody').on( 'click', 'tr', function () {
+          if(!$(this).hasClass('selected')){            
+            const rowData = $('#table_id').DataTable().row( this ).data();
+            $('#detailModal #inputUserId').val(rowData[1]);
+            $('#detailModal #inputUsername').val(rowData[2]);
+            $('#delModal #inputUsername').text(rowData[2]);
+            $('#selectedVal').text(rowData[2]);
+            $('#lockSwitch').prop('checked', rowData[3] !== "OPEN");
+          } else {
+            $('#selectedVal').text('');
+          }
+        });
+      });
+    </script>
+
+</body>
+</html>
