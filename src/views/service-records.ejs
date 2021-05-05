@@ -4,7 +4,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Quản trị quyền</title>
+  <title><%= pageTitle %></title>
   <%- include('../layouts/head'); -%>
   <!-- Custom styles -->
   <link href="styles/dashboard.css" rel="stylesheet">
@@ -25,7 +25,7 @@
             <% if (locals.list) { %>
               <div
                 class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center">
-                <h1 class="h4">Quyền của bạn</h1>
+                <h1 class="h4"><%= pageTitle %></h1>
               </div>
 
               <div class="table-responsive card-body">
@@ -34,12 +34,11 @@
                     <tr>
                       <th></th>
                       <th scope="col">#</th>
-                      <th scope="col">PRIVILEGE</th>
-                      <th scope="col">OWNER</th>
-                      <th scope="col">OBJ_NAME</th>
-                      <th scope="col">GRANT_SOURCES</th>
-                      <th scope="col">ADMIN_OR_GRANT_OPTION</th>
-                      <th scope="col">HIERARCHY_OPTION</th>
+                      <th scope="col">ID_KHAMBENH</th>
+                      <th scope="col">ID_DICHVU</th>
+                      <th scope="col">NGAYGIO</th>
+                      <th scope="col">NGUOITHUCHIEN</th>
+                      <th scope="col">KETLUAN</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -47,12 +46,11 @@
                       <tr>
                         <td class="select-checkbox"></td>
                         <th scope="row"><%= i + 1 %></th>
-                        <td> <%= list[i].PRIVILEGE %></td>
-                        <td><%= list[i].OBJ_OWNER %></td>
-                        <td><%= list[i].OBJ_NAME %></td>
-                        <td><%= list[i].GRANT_SOURCES %></td>
-                        <td><%= list[i].ADMIN_OR_GRANT_OPT %></td>
-                        <td><%= list[i].HIERARCHY_OPT %></td>
+                        <td><%= list[i].ID_KHAMBENH %></td>
+                        <td><%= list[i].ID_DICHVU %></td>
+                        <td><%= list[i].NGAYGIO %></td>
+                        <td><%= list[i].NGUOITHUCHIEN %></td>
+                        <td><%= list[i].KETLUAN %></td>
                       </tr>
                       <% } %>
                   </tbody>

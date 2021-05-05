@@ -1,0 +1,25 @@
+[{
+  "ID_THUOC": "001",
+  "TENTHUOC": "420",
+  "DVT": "ve",
+  "DONGIA": "700",
+  "LUUY": "Không",
+  "XUATXU": "Không",
+  "CONGDUNG": "Không"
+},{
+  "ID_THUOC": "002",
+  "TENTHUOC": "421",
+  "DVT": "lb",
+  "DONGIA": "700",
+  "LUUY": "Không",
+  "XUATXU": "Không",
+  "CONGDUNG": "Không"
+},{
+  "ID_THUOC": "003",
+  "TENTHUOC": "422",
+  "DVT": "ml",
+  "DONGIA": "700",
+  "LUUY": "Không",
+  "XUATXU": "Không",
+  "CONGDUNG": "Không"
+}]

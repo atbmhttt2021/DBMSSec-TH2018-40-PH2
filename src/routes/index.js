@@ -4,25 +4,32 @@ const router = express.Router();
 const authRoutes = require('./auth');
 const departmentRoutes = require('./departments');
 const employeeRoutes = require('./employees');
-const privilegeRoutes = require('./privileges');
-const otherRoutes = require('./others');
+const timekeeperRoutes = require('./timekeeper');
+const serviceRoutes = require('./services');
+const medicineRoutes = require('./medicines');
+const serviceRecordRoutes = require('./service-records');
+const medicalRecordRoutes = require('./medical-records');
+const patientRoutes = require('./patients');
+const prescriptionRoutes = require('./prescriptions');
+const billsRoutes = require('./bills');
+
 const {withAuth} = require('../middlewares/withAuth');
 
 router
 .use('/auth', authRoutes)
 .use('/departments', withAuth, departmentRoutes)
 .use('/employees', withAuth, employeeRoutes)
-.use('/privileges', withAuth, privilegeRoutes)
-.use('/others', withAuth, otherRoutes)
+.use('/timekeeper', withAuth, timekeeperRoutes)
+.use('/services', withAuth, serviceRoutes)
+.use('/medicines', withAuth, medicineRoutes)
+.use('/service-records', withAuth, serviceRecordRoutes)
+.use('/medical-records', withAuth, medicalRecordRoutes)
+.use('/patients', withAuth, patientRoutes)
+.use('/prescriptions', withAuth, prescriptionRoutes)
+.use('/bills', withAuth, billsRoutes)
+
 .get('/', function (req, res) {
   res.redirect('/employees');
 })
 
-// .get('/logs', withAuth, function (req, res) {
-//   res.render('logs', {
-//     path: 'logs',
-//     pageTitle: "Nhật ký",
-//     allow: false
-//   });
-// })
 module.exports = router;
