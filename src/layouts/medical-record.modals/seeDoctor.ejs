@@ -1,0 +1,102 @@
+<!-- Modal Add with new patient -->
+<form class="modal fade" id="seeDoctorModal" style="overflow-y: auto">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header py-2">
+        <h6 class="modal-title">Chẩn đoán và kết luận bệnh</h6>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="justify-content-between py-2">
+          <label class="pr-2" for="recordId">Mã hồ sơ khám bệnh*</label>
+          <input id="recordId" type="text" class="w-100 px-2" disabled>
+        </div>
+        <div class="justify-content-between py-2">
+          <label class="pr-2" for="inputConclusion">Kết luận bệnh*</label>
+          <textarea id="inputConclusion" class="form-control" required></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer py-1">
+        <button id="btnSaveConclusion" type="button" class="btn btn-success">Lưu</button>
+        <button id="btnLoadServices" type="button" class="btn btn-success">Thêm dịch vụ</button>
+        <button id="btnLoadPrescription" type="button" class="btn btn-success">Kê đơn thuốc</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+      </div>
+
+    </div>
+  </div>
+</form>
+
+<script>
+
+  $('#seeDoctorModal').on('show.bs.modal', function (event) {
+    const id = $('#selectedVal').text();
+    if (id) {
+      $('#seeDoctorModal #recordId').val(id);
+      $.ajax({
+        url: `/medical-records/${+id}`,
+        type: 'GET',
+        dataType: 'json',
+        contentType: 'application/json'
+      }).done(function (data) {
+        if (data) {
+          $('#seeDoctorModal #inputConclusion').val(data.KETLUANBS);
+        }
+      }).fail(function (error) {
+        console.log('error', error)
+        Swal.fire({
+          title: 'Lỗi!',
+          text: "Lỗi thông tin hồ sơ bệnh án",
+          icon: 'error',
+          confirmButtonText: 'Cool'
+        })
+      });
+    }
+  });
+
+  $('#seeDoctorModal').on('hidden.bs.modal', function (event) {
+    document.getElementById('seeDoctorModal').reset();
+  });
+
+  $('#btnSaveConclusion').on('click', function (event) {
+    const id = $('#selectedVal').text();
+    if (id) {
+      const dataToPost = {
+        KETLUANBS: $('#seeDoctorModal #inputConclusion').val()
+      }
+
+      const jsonToPost = JSON.stringify(dataToPost);
+      $.ajax({
+        url: `/medical-records/${+id}`,
+        type: 'PUT',
+        dataType: 'json',
+        data: jsonToPost,
+        contentType: 'application/json'
+      }).done(function (data) {
+        Swal.fire({
+          title: 'Đã lưu hồ sơ bệnh án!',
+          icon: 'success',
+          confirmButtonText: 'Ok'
+        }).then((result) => { })
+      }).fail(function (error) {
+        console.log('error', error)
+        Swal.fire({
+          title: 'Lỗi!',
+          text: "Lỗi lưu thông tin hồ sơ bệnh án",
+          icon: 'error',
+          confirmButtonText: 'Cool'
+        })
+      });
+    }
+  });
+
+  $('#btnLoadServices').on('click', function (event) {
+    $('#addServicesModal').modal('show');
+  });
+
+  $('#btnLoadPrescription').on('click', function (event) {
+    $('#addMedicinesModal').modal('show');
+  });
+</script>

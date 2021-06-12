@@ -1,6 +1,5 @@
 [{
   "ID_NHANVIEN": "001",
-  "THANG": "1",
-  "NAM": "2021",
-  "SONGAYCONG": "25"
+  "NGAY": "1/1/2021",
+  "THOIGIAN": "08:00:01"
 }]

@@ -1,21 +1,181 @@
-<!-- Modal Add -->
-<div class="modal fade" id="detailModal">
-    <div class="modal-dialog modal-md">
-        <div class="modal-content">
-        <div class="modal-header py-2">
-            <h6 class="modal-title">Thông tin nhân viên</h6>
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
+<!-- Modal Add or update -->
+<form class="modal fade" id="detailModal">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header py-2">
+        <h6 class="modal-title">Thông tin nhân viên</h6>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group row">
+          <label for="inputId" class="col-sm-3 col-form-label">Mã nhân viên*</label>
+          <div class="col-sm-9">
+            <input type="text" class="form-control" id="inputId" disabled>
+          </div>
         </div>
-        
-        <div class="modal-body">
-          
+        <div class="form-group row">
+          <label for="inputName" class="col-sm-3 col-form-label">Tên nhân viên*</label>
+          <div class="col-sm-9">
+            <input type="text" class="form-control" id="inputName" required>
+          </div>
         </div>
-        
-        <div class="modal-footer py-1">
-            <!-- <button type="submit" class="btn btn-success" >Lưu</button> -->
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+        <div class="form-group row">
+          <label for="inputPhone" class="col-sm-3 col-form-label">Số điện thoại*</label>
+          <div class="col-sm-9">
+            <input type="tel" class="form-control" id="inputPhone" required>
+          </div>
         </div>
-        
+        <div class="form-group row">
+          <label for="inputAddress" class="col-sm-3 col-form-label">Địa chỉ*</label>
+          <div class="col-sm-9">
+            <input type="tel" class="form-control" id="inputAddress" required>
+          </div>
         </div>
+        <div class="form-group row">
+          <label for="inputGender" class="col-sm-3 col-form-label">Giới tính*</label>
+          <div class="col-sm-9">
+            <select id="inputGender" class="custom-select" style="width: 100%" required>
+              <option value="" selected disabled>Chưa chọn</option>
+              <option value="male">Nam</option>
+              <option value="female">Nữ</option>
+              <option value="others">Khác</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="inputBirth" class="col-sm-3 col-form-label">Ngày sinh*</label>
+          <div class="col-sm-9">
+            <input type="date" class="form-control" id="inputBirth" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="inputSalary" class="col-sm-3 col-form-label">Lương cứng*</label>
+          <div class="col-sm-9">
+            <input type="number" class="form-control" id="inputSalary" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="inputUser" class="col-sm-3 col-form-label">Vai trò*</label>
+          <div class="col-sm-9">
+            <input type="text" class="form-control" id="inputUser" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="inputDepartment" class="col-sm-3 col-form-label">Phòng ban*</label>
+          <div class="col-sm-9">
+            <select id="inputDepartment" class="custom-select" style="width: 100%" required></select>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer py-1">
+        <button type="submit" class="btn btn-success">Lưu</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+      </div>
+
     </div>
-</div>
+  </div>
+</form>
+
+<script>
+  // Get department selectbox
+  $('#inputDepartment').select2({
+    placeholder: "Chưa chọn",
+    ajax: {
+      url: `/departments/list`,
+      dataType: 'json',
+      processResults: function (data) {
+        return {
+          results: data.map(item => ({ ...item, id: item.ID_DONVI, text: item.TENDV }))
+        };
+      }
+    },
+    language: {
+      noResults: () => "Không tìm thấy dữ liệu!"
+    }
+  });
+
+  // Get detail
+  $('#detailModal').on('show.bs.modal', function (event) {
+    const id = $('#selectedVal').text();
+    if (id) {
+      $.ajax({
+        url: `/employees/${+id}`,
+        type: 'GET',
+        dataType: 'json',
+        contentType: 'application/json'
+      }).done(function (data) {
+        if (data) {
+          $('#inputId').val(data.ID_NHANVIEN);
+          $('#inputName').val(data.TENNV);
+          $('#inputPhone').val(data.SDT);
+          $('#inputAddress').val(data.DIACHI);
+          $('#inputGender').val(data.GIOITINH);
+          $('#inputBirth').val(new Date(data.NGAYSINH).toLocaleDateString('en-CA'));
+          $('#inputSalary').val(data.LUONG);
+          $('#inputUser').val(data.VAITRO);
+          const option = new Option(data.TENDV, data.DONVI, true, true);
+          $("#inputDepartment").append(option).trigger('change');
+        }
+      }).fail(function (error) {
+        console.log('error', error)
+        Swal.fire({
+          title: 'Lỗi!',
+          text: "Lỗi thông tin nhân viên",
+          icon: 'error',
+          confirmButtonText: 'Cool'
+        })
+      });
+    }
+    if (!id) {
+      $('#inputId').hide();
+      $('label[for=inputId]').hide();
+    }
+
+  });
+
+  $('#detailModal').on('hidden.bs.modal', function (event) {
+    document.getElementById('detailModal').reset();
+  });
+
+  // Add or udate
+  $("#detailModal").submit(function (e) {
+    e.preventDefault();
+    const id = $('#selectedVal').text();
+    const dataToPost = {
+      TENNV: $('#detailModal #inputName').val(),
+      SDT: $('#detailModal #inputPhone').val(),
+      DIACHI: $('#detailModal #inputAddress').val(),
+      GIOITINH: $('#detailModal #inputGender').val(),
+      NGAYSINH: $('#detailModal #inputBirth').val(),
+      LUONG: $('#detailModal #inputSalary').val(),
+      VAITRO: $('#detailModal #inputUser').val(),
+      DONVI: $('#detailModal #inputDepartment').val()
+    }
+    const jsonToPost = JSON.stringify(dataToPost);
+    $.ajax({
+      url: `/employees/${id ? +id : ''}`,
+      type: id ? 'PUT' : 'POST',
+      dataType: 'json',
+      data: jsonToPost,
+      contentType: 'application/json'
+    }).done(function (data) {
+      Swal.fire({
+        title: 'Hoàn thành!',
+        icon: 'success',
+        confirmButtonText: 'Ok'
+      }).then((result) => {
+        window.location.reload();
+      })
+    }).fail(function (error) {
+      console.log('error', error)
+      Swal.fire({
+        title: 'Lỗi!',
+        text: "Lỗi lưu thông tin nhân viên",
+        icon: 'error',
+        confirmButtonText: 'Cool'
+      })
+    });
+  });
+</script>

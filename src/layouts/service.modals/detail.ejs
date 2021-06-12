@@ -1,0 +1,109 @@
+<!-- Modal Add or update -->
+<form class="modal fade" id="detailModal">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header py-2">
+        <h6 class="modal-title">Thông tin dịch vụ</h6>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group row">
+          <label for="inputId" class="col-sm-3 col-form-label">Mã dịch vụ*</label>
+          <div class="col-sm-9">
+            <input type="text" class="form-control" id="inputId" disabled>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="inputName" class="col-sm-3 col-form-label">Tên dịch vụ*</label>
+          <div class="col-sm-9">
+            <input type="text" class="form-control" id="inputName" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="inputPrice" class="col-sm-3 col-form-label">Đơn giá*</label>
+          <div class="col-sm-9">
+            <input type="number" class="form-control" id="inputPrice" required>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="modal-footer py-1">
+        <button type="submit" class="btn btn-success">Lưu</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+      </div>
+
+    </div>
+  </div>
+</form>
+
+<script>
+  // Get detail
+  $('#detailModal').on('show.bs.modal', function (event) {
+    const id = $('#selectedVal').text();
+    if (id) {
+      $.ajax({
+        url: `/services/${+id}`,
+        type: 'GET',
+        dataType: 'json',
+        contentType: 'application/json'
+      }).done(function (data) {
+        if (data) {
+          $('#inputId').val(data.ID_DICHVU);
+          $('#inputName').val(data.TENDV);
+          $('#inputPrice').val(data.DONGIA);
+        }
+      }).fail(function (error) {
+        console.log('error', error)
+        Swal.fire({
+          title: 'Lỗi!',
+          text: "Lỗi thông tin dịch vụ",
+          icon: 'error',
+          confirmButtonText: 'Cool'
+        })
+      });
+    }
+    if (!id) {
+      $('#inputId').hide();
+      $('label[for=inputId]').hide();
+    }
+  });
+
+  $('#detailModal').on('hidden.bs.modal', function (event) {
+    document.getElementById('detailModal').reset();
+  });
+
+  // Add or udate
+  $("#detailModal").submit(function (e) {
+    e.preventDefault();
+    const id = $('#selectedVal').text();
+    const dataToPost = {
+      TENDV: $('#detailModal #inputName').val(),
+      DONGIA: $('#detailModal #inputPrice').val()
+    }
+    const jsonToPost = JSON.stringify(dataToPost);
+    $.ajax({
+      url: `/services/${id ? +id : ''}`,
+      type: id ? 'PUT' : 'POST',
+      dataType: 'json',
+      data: jsonToPost,
+      contentType: 'application/json'
+    }).done(function (data) {
+      Swal.fire({
+        title: 'Hoàn thành!',
+        icon: 'success',
+        confirmButtonText: 'Ok'
+      }).then((result) => {
+        window.location.reload();
+      })
+    }).fail(function (error) {
+      console.log('error', error)
+      Swal.fire({
+        title: 'Lỗi!',
+        text: "Lỗi lưu thông tin dịch vụ",
+        icon: 'error',
+        confirmButtonText: 'Cool'
+      })
+    });
+  });
+</script>

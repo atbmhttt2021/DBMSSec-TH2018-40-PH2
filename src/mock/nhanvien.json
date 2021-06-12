@@ -2,7 +2,12 @@
   "ID_NHANVIEN": "001",
   "TENNV": "Quản lý 1",
   "DONVI": "001",
-  "VAITRO": "QLTN1"
+  "VAITRO": "QLTN1",
+  "SDT": "",
+  "DIACHI": "",
+  "GIOITINH": "",
+  "NGAYSINH": "",
+  "LUONG": 0
 },{
   "ID_NHANVIEN": "002",
   "TENNV": "Quản lý 2",

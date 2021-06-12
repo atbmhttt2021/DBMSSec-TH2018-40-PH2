@@ -1,0 +1,131 @@
+<!-- Modal Add or update with existing patient -->
+<form class="modal fade" id="detailModal">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header py-2">
+        <h6 class="modal-title">Thông tin bệnh nhân</h6>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="justify-content-between py-2">
+          <label class="pr-2" for="selectRecord">Mã khám bệnh<span id="oldText"> cũ</span>*</label>
+          <select id="selectRecord" class="custom-select" style="width: 100%" required></select>
+        </div>
+      </div>
+
+      <div class="modal-header py-2">
+        <h6 class="modal-title">Thông tin hồ sơ khám bệnh</h6>
+      </div>
+
+      <div class="modal-body">
+        <div class="justify-content-between py-2">
+          <label class="pr-2" for="inputSymptom">Triệu chứng bệnh*</label>
+          <textarea id="inputSymptom" class="form-control" required></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer py-1">
+        <button type="submit" class="btn btn-success">Tiếp tục</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+      </div>
+
+    </div>
+  </div>
+</form>
+
+<script>
+
+  // Get old record selectbox
+  $('#selectRecord').select2({
+    placeholder: "Chưa chọn",
+    ajax: {
+      url: `/medical-records/list`,
+      dataType: 'json',
+      processResults: function (data) {
+        return {
+          results: data.map(item => ({ ...item, id: item.ID_KHAMBENH, text: item.ID_KHAMBENH }))
+        };
+      }
+    },
+    language: {
+      noResults: () => "Không tìm thấy dữ liệu!"
+    }
+  });
+
+  $('#detailModal').on('show.bs.modal', function (event) {
+    const id = $('#selectedVal').text();
+    if (id) {
+      $('#selectRecord').attr('disabled', true);
+      $('#oldText').hide();
+      $.ajax({
+        url: `/medical-records/${+id}`,
+        type: 'GET',
+        dataType: 'json',
+        contentType: 'application/json'
+      }).done(function (data) {
+        if (data) {
+          $('#inputSymptom').val(data.TINHTRANGBD);
+          const option = new Option(data.ID_KHAMBENH, data.ID_KHAMBENH, true, true);
+          $("#selectRecord").append(option).trigger('change');
+        }
+      }).fail(function (error) {
+        console.log('error', error)
+        Swal.fire({
+          title: 'Lỗi!',
+          text: "Lỗi thông tin hồ sơ bệnh án",
+          icon: 'error',
+          confirmButtonText: 'Cool'
+        })
+      });
+    }
+  });
+
+  $('#detailModal').on('hidden.bs.modal', function (event) {
+    document.getElementById('detailModal').reset();
+  });
+
+  // Add record
+  $("#detailModal").submit(function (e) {
+    e.preventDefault();
+    // Add new record from old record id
+    const recordId = $('#selectRecord').select2('data')[0].id;
+    const dataToPost = {
+      TINHTRANGBD: $('#detailModal #inputSymptom').val()
+    }
+
+    const jsonToPost = JSON.stringify(dataToPost);
+    $.ajax({
+      url: `/medical-records?oldid=${recordId}`,
+      type: 'POST',
+      dataType: 'json',
+      data: jsonToPost,
+      contentType: 'application/json'
+    }).done(function (data) {
+      Swal.fire({
+        title: 'Đã lưu hồ sơ bệnh án!',
+        icon: 'success',
+        confirmButtonText: 'Ok'
+      }).then((result) => {
+        const id = data.id;
+        if (id) {
+          cooordiate(id);
+        }
+      })
+    }).fail(function (error) {
+      console.log('error', error)
+      Swal.fire({
+        title: 'Lỗi!',
+        text: "Lỗi lưu thông tin hồ sơ bệnh án",
+        icon: 'error',
+        confirmButtonText: 'Cool'
+      })
+    });
+  });
+
+  let cooordiate = recordId => {
+    $('#detailModal').modal('hide');
+    $('#coordinateModal').modal('show');
+    $("#coordinateModal #recordId").val(recordId);
+  }
+</script>

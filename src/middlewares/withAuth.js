@@ -1,15 +1,19 @@
 const withAuth = (req, res, next) => {
-  if(req.session.user){
-    next();
-  } else {
-    res.redirect('/auth/login');
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  if (req.isUnauthenticated()) {
+    req.logout();
+    return res.redirect('/auth/login');
   }
 };
+
 const withNoAuth = (req, res, next) => {
-  if(!req.session.user){
-    next();
-  } else {
-    res.redirect('/');
+  if (req.isUnauthenticated()) {
+    return next();
+  }
+  if (req.isAuthenticated()) {
+    return res.redirect('/');
   }
 };
 

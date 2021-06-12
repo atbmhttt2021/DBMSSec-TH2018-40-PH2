@@ -1,0 +1,35 @@
+<!-- Modal add services -->
+<form class="modal fade" id="addServicesModal" style="overflow-y: auto">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header py-2">
+        <h6 class="modal-title">Thêm dịch vụ</h6>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="justify-content-between py-2">
+          <label class="pr-2" for="recordId">Mã hồ sơ khám bệnh:</label>
+          <input id="recordId" type="text" class="w-100 px-2" disabled>
+        </div>
+      </div>
+
+      <div class="modal-footer py-1">
+        <button type="submit" class="btn btn-success">Xong</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+      </div>
+
+    </div>
+  </div>
+</form>
+
+<script>
+
+  $('#addServicesModal').on('show.bs.modal', function (event) {
+    const id = $('#selectedVal').text();
+    if (id) {
+      $('#addServicesModal #recordId').val(id);
+    }
+  });
+
+</script>

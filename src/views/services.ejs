@@ -26,6 +26,16 @@
               <div
                 class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center">
                 <h1 class="h4"><%= pageTitle %></h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                  <div class="btn-group ml-2 py-2 py-lg-0">
+                    <button class="btn-without-selected btn btn-sm btn-outline-secondary" 
+                    data-toggle="modal" data-target="#detailModal">Thêm</button>
+                    <button class="btn-with-selected btn btn-sm btn-outline-secondary disabled" 
+                    data-toggle="modal" data-target="#detailModal">Sửa</button>
+                    <button class="btn-with-selected btn btn-sm btn-outline-secondary disabled" 
+                    data-toggle="modal" data-target="#delModal">Xóa</button>
+                  </div>
+                </div>
               </div>
 
               <div class="table-responsive card-body">
@@ -33,17 +43,15 @@
                   <thead>
                     <tr>
                       <th></th>
-                      <th scope="col">#</th>
-                      <th scope="col">ID_DICHVU</th>
-                      <th scope="col">TENDV</th>
-                      <th scope="col">DONGIA</th>
+                      <th scope="col">Mã dịch vụ</th>
+                      <th scope="col">Tên dịch vụ</th>
+                      <th scope="col">Đơn giá</th>
                     </tr>
                   </thead>
                   <tbody>
                     <% for(let i=0; i<list.length; i++) { %>
                       <tr>
                         <td class="select-checkbox"></td>
-                        <th scope="row"><%= i + 1 %></th>
                         <td><%= list[i].ID_DICHVU %></td>
                         <td><%= list[i].TENDV %></td>
                         <td><%= list[i].DONGIA %></td>
@@ -52,12 +60,31 @@
                   </tbody>
                 </table>
               </div>
+              
+              <div class="py-2">Đang chọn: 
+                <span id="selectedVal"></span>
+              </div>
             <% } %>
           </main>
       </div>
     </div>
 
     <%- include('../layouts/bottom'); -%>
+    <%- include('../layouts/service.modals/detail'); -%>
+    <%- include('../layouts/service.modals/delete'); -%>
+
+    <script>
+      $(document).ready(function () {    
+        $('#table_id tbody').on( 'click', 'tr', function () {
+          if(!$(this).hasClass('selected')){            
+            const rowData = $('#table_id').DataTable().row( this ).data();
+            $('#selectedVal').text(rowData[1]);
+          } else {
+            $('#selectedVal').text('');
+          }
+        });
+      });
+    </script>
 
 </body>
 </html>

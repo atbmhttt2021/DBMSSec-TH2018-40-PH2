@@ -4,7 +4,6 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title><%= pageTitle %></title>
   <%- include('../layouts/head'); -%>
   <!-- Custom styles -->
   <link href="styles/dashboard.css" rel="stylesheet">
@@ -22,10 +21,21 @@
                 <h6><%= error.message %></h6>
               </div>
             <% } %>
+
             <% if (locals.list) { %>
               <div
                 class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center">
                 <h1 class="h4"><%= pageTitle %></h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                  <div class="btn-group ml-2 py-2 py-lg-0">
+                    <button class="btn-without-selected btn btn-sm btn-outline-secondary" 
+                    data-toggle="modal" data-target="#switchModal">Thêm</button>
+                    <button class="btn-with-selected btn btn-sm btn-outline-secondary disabled" 
+                    data-toggle="modal" data-target="#detailModal">Sửa</button>
+                    <button class="btn-with-selected btn btn-sm btn-outline-secondary disabled" 
+                    data-toggle="modal" data-target="#seeDoctorModal">Khám và chấn đoán bệnh</button>
+                  </div>
+                </div>
               </div>
 
               <div class="table-responsive card-body">
@@ -33,28 +43,30 @@
                   <thead>
                     <tr>
                       <th></th>
-                      <th scope="col">#</th>
-                      <th scope="col">ID_KHAMBENH</th>
-                      <th scope="col">ID_BENHNHAN</th>
-                      <th scope="col">MATT</th>
-                      <th scope="col">MABS</th>
-                      <th scope="col">NGAYKB</th>
+                      <th scope="col">Mã khám bệnh</th>
+                      <th scope="col">Mã bệnh nhân</th>
+                      <th scope="col">Mã tiếp tân</th>
+                      <th scope="col">Mã bác sĩ</th>
+                      <th scope="col">Ngày khám</th>
                     </tr>
                   </thead>
                   <tbody>
                     <% for(let i=0; i<list.length; i++) { %>
                       <tr>
                         <td class="select-checkbox"></td>
-                        <th scope="row"><%= i + 1 %></th>
                         <td><%= list[i].ID_KHAMBENH %></td>
                         <td><%= list[i].ID_BENHNHAN %></td>
                         <td><%= list[i].MATT %></td>
                         <td><%= list[i].MABS %></td>
-                        <td><%= list[i].NGAYKB %></td>
+                        <td><%= list[i].NGAYKB ? list[i].NGAYKB.toLocaleDateString('en-CA') : '' %></td>
                       </tr>
                       <% } %>
                   </tbody>
                 </table>
+              </div>
+
+              <div class="py-2">Đang chọn: 
+                <span id="selectedVal"></span>
               </div>
             <% } %>
           </main>
@@ -62,6 +74,26 @@
     </div>
 
     <%- include('../layouts/bottom'); -%>
+    <%- include('../layouts/medical-record.modals/switch'); -%>
+    <%- include('../layouts/medical-record.modals/detail'); -%>
+    <%- include('../layouts/medical-record.modals/addNewPatient'); -%>
+    <%- include('../layouts/medical-record.modals/coordinate'); -%>
+    <%- include('../layouts/medical-record.modals/seeDoctor'); -%>
+    <%- include('../layouts/medical-record.modals/addServices'); -%>
+    <%- include('../layouts/medical-record.modals/addMedicines'); -%>
+
+    <script>
+      $(document).ready(function () {    
+        $('#table_id tbody').on( 'click', 'tr', function () {
+          if(!$(this).hasClass('selected')){            
+            const rowData = $('#table_id').DataTable().row( this ).data();
+            $('#selectedVal').text(rowData[1]);
+          } else {
+            $('#selectedVal').text('');
+          }
+        });
+      });
+    </script>
 
 </body>
 </html>

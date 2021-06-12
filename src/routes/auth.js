@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const {withNoAuth} = require('../middlewares/withAuth');
-const db = require('../utils/db');
+const passport = require('passport');
+const { withNoAuth } = require('../middlewares/withAuth');
 
 // Load login page
 router.get('/login', withNoAuth, function (req, res) {
@@ -12,24 +12,28 @@ router.get('/login', withNoAuth, function (req, res) {
 })
 
 // Login action
-router.post('/login', withNoAuth, async function (req, res) {
-  const username = req.body.username;
-  const password = req.body.password;
-  const conn = db({username, password});
-  // Test connection
-  await conn.raw('SELECT 1 FROM DUAL');
-  
-  req.session.user = {
-    username: username.toUpperCase(),
-    password
+router.post('/login', (req, res, next) => passport.authenticate('local', (error, user, info) => {
+  if (error) {
+    return res.status(500).json(error);
   }
-  res.json({username});
-})
+  if (!user) {
+    return res.status(401).json(info.message);
+  }
+  req.logIn(user, function (err) {
+    if (err) {
+      return next(err);
+    }
+    return res.status(200).json({ status: 'OK' });
+  })
+
+})(req, res, next))
 
 // Logout action
 router.get('/logout', function (req, res) {
-  req.session.destroy(function(err) {
-    return res.status(200).json({status: 'ok'})
-  })
+  req.logout();
+  req.session.destroy(function (err) {
+    res.redirect('/auth/login');
+  });
 })
+
 module.exports = router;

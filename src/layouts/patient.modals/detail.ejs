@@ -1,0 +1,164 @@
+<!-- Modal Add or update -->
+<form class="modal fade" id="detailModal">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header py-2">
+        <h6 class="modal-title">Thông tin bệnh nhân</h6>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group row">
+          <label for="inputId" class="col-sm-3 col-form-label">Mã bệnh nhân*</label>
+          <div class="col-sm-9">
+            <input type="text" class="form-control" id="inputId" disabled>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="inputName" class="col-sm-3 col-form-label">Tên bệnh nhân*</label>
+          <div class="col-sm-9">
+            <input type="text" class="form-control" id="inputName" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="inputBirth" class="col-sm-3 col-form-label">Ngày sinh*</label>
+          <div class="col-sm-9">
+            <input type="date" class="form-control" id="inputBirth" placeholder="dd-mm-yyyy"  value=""
+            min="1997-01-01" max="2030-12-31" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="inputPhone" class="col-sm-3 col-form-label">Số điện thoại*</label>
+          <div class="col-sm-9">
+            <input type="tel" class="form-control" id="inputPhone" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="inputAddress" class="col-sm-3 col-form-label">Địa chỉ*</label>
+          <div class="col-sm-9">
+            <input type="tel" class="form-control" id="inputAddress" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="inputGender" class="col-sm-3 col-form-label">Giới tính*</label>
+          <div class="col-sm-9">
+            <select id="inputGender" class="custom-select" style="width: 100%" required>
+              <option value="" selected disabled>Chưa chọn</option>
+              <option value="male">Nam</option>
+              <option value="female">Nữ</option>
+              <option value="others">Khác</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="inputJob" class="col-sm-3 col-form-label">Nghề nghiệp</label>
+          <div class="col-sm-9">
+            <input type="text" class="form-control" id="inputJob">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="inputWorkplace" class="col-sm-3 col-form-label">Nơi làm việc</label>
+          <div class="col-sm-9">
+            <input type="text" class="form-control" id="inputWorkplace">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="inputRelaPhone" class="col-sm-3 col-form-label">Số điện thoại người thân</label>
+          <div class="col-sm-9">
+            <input type="tel" class="form-control" id="inputRelaPhone">
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer py-1">
+        <button type="submit" class="btn btn-success">Lưu</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+      </div>
+
+    </div>
+  </div>
+</form>
+
+<script>
+  // Get detail
+  $('#detailModal').on('show.bs.modal', function (event) {
+    const id = $('#selectedVal').text();
+    if (id) {
+      $.ajax({
+        url: `/patients/${+id}`,
+        type: 'GET',
+        dataType: 'json',
+        contentType: 'application/json'
+      }).done(function (data) {
+        if (data) {
+          $('#inputId').val(data.ID_BENHNHAN);
+          $('#inputName').val(data.HOTEN);
+          $('#inputBirth').val(new Date(data.NGAYSINH).toLocaleDateString('en-CA'));
+          $('#inputPhone').val(data.SDT);
+          $('#inputAddress').val(data.DIACHI);
+          $('#inputGender').val(data.GIOITINH);
+          $('#inputJob').val(data.NGHENGHIEP);
+          $('#inputWorkplace').val(data.NOILAMVIEC);
+          $('#inputRelaPhone').val(data.SDTNGUOITHAN);
+        }
+      }).fail(function (error) {
+        console.log('error', error)
+        Swal.fire({
+          title: 'Lỗi!',
+          text: "Lỗi thông tin bệnh nhân",
+          icon: 'error',
+          confirmButtonText: 'Cool'
+        })
+      });
+    }
+    if (!id) {
+      $('#inputId').hide();
+      $('label[for=inputId]').hide();
+    }
+  });
+
+  $('#detailModal').on('hidden.bs.modal', function (event) {
+    document.getElementById('detailModal').reset();
+  });
+
+  // Add or udate
+  $("#detailModal").submit(function (e) {
+    e.preventDefault();
+    const id = $('#selectedVal').text();
+    const dataToPost = {
+      HOTEN: $('#detailModal #inputName').val(),
+      NGAYSINH: $('#detailModal #inputBirth').val(),
+      SDT: $('#detailModal #inputPhone').val(),
+      DIACHI: $('#detailModal #inputAddress').val(),
+      GIOITINH: $('#detailModal #inputGender').val(),
+      NGHENGHIEP: $('#detailModal #inputJob').val(),
+      NOILAMVIEC: $('#detailModal #inputWorkplace').val(),
+      SDTNGUOITHAN: $('#detailModal #inputRelaPhone').val(),
+    }
+
+    const jsonToPost = JSON.stringify(dataToPost);
+    $.ajax({
+      url: `/patients/${id ? +id : ''}`,
+      type: id ? 'PUT' : 'POST',
+      dataType: 'json',
+      data: jsonToPost,
+      contentType: 'application/json'
+    }).done(function (data) {
+      Swal.fire({
+        title: 'Hoàn thành!',
+        icon: 'success',
+        confirmButtonText: 'Ok'
+      }).then((result) => {
+        window.location.reload();
+      })
+    }).fail(function (error) {
+      console.log('error', error)
+      Swal.fire({
+        title: 'Lỗi!',
+        text: "Lỗi lưu thông tin bệnh nhân",
+        icon: 'error',
+        confirmButtonText: 'Cool'
+      })
+    });
+  });
+</script>

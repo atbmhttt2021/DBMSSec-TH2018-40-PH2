@@ -1,0 +1,25 @@
+<!-- Modal delete -->
+<div class="modal fade" id="switchModal">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+
+      <div class="modal-footer mx-auto my-4 border-0">
+        <button id="btnOldPatient" type="button" class="btn btn-outline-primary" data-dismiss="modal">Đã từng khám bệnh</button>
+        <button id="btnNewPatient" type="button" class="btn btn-outline-success" data-dismiss="modal">Bệnh nhân mới</button>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  $('#btnOldPatient').on('click', function (event) {
+    $('#detailModal').modal('show');
+  });
+  $('#btnNewPatient').on('click', function (event) {
+    $('#newPatientModal').modal('show');
+  });
+</script>

@@ -1,0 +1,51 @@
+<!-- Modal delete -->
+<form class="modal fade" id="delModal">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title">Xóa nhân viên <strong id="delId" class="text-danger"></strong>?</h6>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <div class="modal-footer mx-auto border-0">
+        <button type="submit" class="btn btn-success">Xóa</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+      </div>
+
+    </div>
+  </div>
+</form>
+
+<script>
+  // Get detail
+  $('#delModal').on('show.bs.modal', function (event) {
+    const id = $('#selectedVal').text();
+    $('#delId').text(id);
+  });
+
+  // Delete
+  $("#delModal").submit(function (e) {
+    e.preventDefault();
+    const id = $('#selectedVal').text();
+    $.ajax({
+      url: `/employees/${+id}`,
+      type: 'DELETE'
+    }).done(function (data) {
+      Swal.fire({
+        title: 'Hoàn thành!',
+        icon: 'success',
+        confirmButtonText: 'Ok'
+      }).then((result) => {
+        window.location.reload();
+      })
+    }).fail(function (error) {
+      console.log('error', error)
+      Swal.fire({
+        title: 'Lỗi!',
+        text: "Lỗi xóa nhân viên",
+        icon: 'error',
+        confirmButtonText: 'Cool'
+      })
+    });
+  });
+</script>

@@ -10,12 +10,16 @@
   "license": "ISC",
   "dependencies": {
     "ajv": "^8.2.0",
+    "connect-session-knex": "^2.1.0",
     "ejs": "^3.1.6",
     "express": "^4.17.1",
     "express-async-errors": "^3.1.1",
     "express-session": "^1.17.1",
-    "knex": "^0.95.4",
+    "knex": "^0.95.6",
+    "moment": "^2.29.1",
     "morgan": "^1.10.0",
-    "oracledb": "^5.1.0"
+    "oracledb": "^5.2.0",
+    "passport": "^0.4.1",
+    "passport-local": "^1.0.0"
   }
 }

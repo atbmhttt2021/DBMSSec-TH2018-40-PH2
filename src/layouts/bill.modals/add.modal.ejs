@@ -1,0 +1,50 @@
+<!-- Modal Add -->
+<div class="modal fade" id="addModal">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header py-2">
+        <h6 class="modal-title">Thông tin hóa đơn</h6>
+      </div>
+
+      <div class="modal-body">
+        <div class="justify-content-between py-2">
+          <label class="pr-2" for="typePriv">Mã khám bệnh:</label>
+          <select id="typePriv" class="custom-select" style="width: 100%" required>
+            <option value="" selected disabled>Chưa chọn</option>
+            <option value="SELECT">SELECT</option>
+            <option value="INSERT">INSERT</option>
+            <option value="UPDATE">UPDATE</option>
+            <option value="DELETE">DELETE</option>
+          </select>
+        </div>
+
+        <div class="justify-content-between py-2">
+          <label class="pr-2" for="typePriv">Mã dịch vụ:</label>
+          <select id="typePriv" class="custom-select" style="width: 100%" required>
+            <option value="" selected disabled>Chưa chọn</option>
+            <option value="SELECT">SELECT</option>
+            <option value="INSERT">INSERT</option>
+            <option value="UPDATE">UPDATE</option>
+            <option value="DELETE">DELETE</option>
+          </select>
+        </div>
+
+        <div class="justify-content-between py-2">
+          <label for="inputUsername" class="col-form-label">Thành tiền</label>
+          <div class="input-group">
+            <input type="number " class="form-control" id="inputUsername" required>
+            <span class="input-group-text">đ</span>
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="modal-footer py-1">
+        <button type="submit" class="btn btn-success"">Lưu</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+      </div>
+
+    </div>
+  </div>
+</div>

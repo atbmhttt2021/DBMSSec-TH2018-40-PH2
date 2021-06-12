@@ -4,7 +4,6 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Quản lý bệnh viện|Phòng ban</title>
   <%- include('../layouts/head'); -%>
   <!-- Custom styles -->
   <link href="styles/dashboard.css" rel="stylesheet">
@@ -25,6 +24,16 @@
             <% if (locals.list) { %>
               <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
                 <h1 class="h4">Danh sách phòng ban</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                  <div class="btn-group ml-2 py-2 py-lg-0">
+                    <button class="btn-without-selected btn btn-sm btn-outline-secondary" 
+                    data-toggle="modal" data-target="#detailModal">Thêm</button>
+                    <button class="btn-with-selected btn btn-sm btn-outline-secondary disabled" 
+                    data-toggle="modal" data-target="#detailModal">Sửa</button>
+                    <button class="btn-with-selected btn btn-sm btn-outline-secondary disabled" 
+                    data-toggle="modal" data-target="#delModal">Xóa</button>
+                  </div>
+                </div>
               </div>
 
               <div class="table-responsive">
@@ -32,8 +41,8 @@
                   <thead>
                     <tr>
                       <th></th>
-                      <th>ID_DONVI</th>
-                      <th>TENDV</th>
+                      <th>Mã phòng</th>
+                      <th>Tên phòng</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -61,17 +70,15 @@
     </div>
 
     <%- include('../layouts/bottom'); -%>
+    <%- include('../layouts/department.modals/detail'); -%>
+    <%- include('../layouts/department.modals/delete'); -%>
 
     <script>
       $(document).ready(function () {    
         $('#table_id tbody').on( 'click', 'tr', function () {
           if(!$(this).hasClass('selected')){            
             const rowData = $('#table_id').DataTable().row( this ).data();
-            $('#detailModal #inputUserId').val(rowData[1]);
-            $('#detailModal #inputUsername').val(rowData[2]);
-            $('#delModal #inputUsername').text(rowData[2]);
-            $('#selectedVal').text(rowData[2]);
-            $('#lockSwitch').prop('checked', rowData[3] !== "OPEN");
+            $('#selectedVal').text(rowData[1]);
           } else {
             $('#selectedVal').text('');
           }

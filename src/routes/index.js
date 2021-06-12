@@ -13,23 +13,23 @@ const patientRoutes = require('./patients');
 const prescriptionRoutes = require('./prescriptions');
 const billsRoutes = require('./bills');
 
-const {withAuth} = require('../middlewares/withAuth');
+const { withAuth } = require('../middlewares/withAuth');
 
 router
-.use('/auth', authRoutes)
-.use('/departments', withAuth, departmentRoutes)
-.use('/employees', withAuth, employeeRoutes)
-.use('/timekeeper', withAuth, timekeeperRoutes)
-.use('/services', withAuth, serviceRoutes)
-.use('/medicines', withAuth, medicineRoutes)
-.use('/service-records', withAuth, serviceRecordRoutes)
-.use('/medical-records', withAuth, medicalRecordRoutes)
-.use('/patients', withAuth, patientRoutes)
-.use('/prescriptions', withAuth, prescriptionRoutes)
-.use('/bills', withAuth, billsRoutes)
+  .use('/auth', authRoutes)
+  .use('/departments', withAuth, departmentRoutes)
+  .use('/employees', withAuth, employeeRoutes)
+  .use('/timekeeper', withAuth, timekeeperRoutes)
+  .use('/services', withAuth, serviceRoutes)
+  .use('/medicines', withAuth, medicineRoutes)
+  .use('/service-records', withAuth, serviceRecordRoutes)
+  .use('/medical-records', withAuth, medicalRecordRoutes)
+  .use('/patients', withAuth, patientRoutes)
+  .use('/prescriptions', withAuth, prescriptionRoutes)
+  .use('/bills', withAuth, billsRoutes)
 
-.get('/', function (req, res) {
-  res.redirect('/employees');
-})
+  .get('/', function (req, res) {
+    res.redirect('/employees');
+  })
 
 module.exports = router;

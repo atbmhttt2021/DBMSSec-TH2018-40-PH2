@@ -1,0 +1,112 @@
+<!-- Modal coordinate record to doctor -->
+<form class="modal fade" id="coordinateModal">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header py-2">
+        <h6 class="modal-title">Điều phối ca khám bệnh</h6>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="justify-content-between py-2">
+          <label class="pr-2" for="recordId">Mã hồ sơ khám bệnh:</label>
+          <input id="recordId" type="text" class="w-100 px-2" disabled>
+        </div>
+        <div class="justify-content-between py-2">
+          <label class="pr-2" for="selectDocter">Bác sĩ:</label>
+          <select id="selectDocter" class="custom-select" style="width: 100%" required></select>
+        </div>
+      </div>
+
+      <div class="modal-footer py-1">
+        <button type="submit" class="btn btn-success">Xong</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+      </div>
+
+    </div>
+  </div>
+</form>
+
+<script>
+
+  $('#coordinateModal').on('show.bs.modal', function (event) {
+    const id = $('#selectedVal').text();
+    if (id) {
+      $.ajax({
+        url: `/medical-records/${+id}`,
+        type: 'GET',
+        dataType: 'json',
+        contentType: 'application/json'
+      }).done(function (data) {
+        if (data) {
+          $('#recordId').val(data.ID_KHAMBENH);
+          const option = new Option(data.TENBS, data.MABS, true, true);
+          $("#selectDocter").append(option).trigger('change');
+        }
+      }).fail(function (error) {
+        console.log('error', error)
+        Swal.fire({
+          title: 'Lỗi!',
+          text: "Lỗi thông tin hồ sơ bệnh án",
+          icon: 'error',
+          confirmButtonText: 'Cool'
+        })
+      });
+    }
+  });
+
+
+  // Get doctor selectbox
+  $('#selectDocter').select2({
+    placeholder: "Chưa chọn",
+    ajax: {
+      url: '/employees/doctors',
+      dataType: 'json',
+      processResults: function (data) {
+        return {
+          results: data.map(item => ({ ...item, id: item.ID_NHANVIEN, text: item.TENNV }))
+        };
+      }
+    },
+    language: {
+      noResults: () => "Không tìm thấy dữ liệu!"
+    }
+  });
+
+  // Update record
+  $("#coordinateModal").submit(function (e) {
+    e.preventDefault();
+    // Add new record from old record id
+    const recordId = $('#recordId').val();
+    const doctorId = $('#selectDocter').select2('data')[0].id;
+    const dataToPost = {
+      MABS: doctorId
+    }
+
+    const jsonToPost = JSON.stringify(dataToPost);
+    $.ajax({
+      url: `/medical-records/${+recordId}`,
+      type: 'PUT',
+      dataType: 'json',
+      data: jsonToPost,
+      contentType: 'application/json'
+    }).done(function (data) {
+      Swal.fire({
+        title: 'Đã lưu hồ sơ bệnh án!',
+        icon: 'success',
+        confirmButtonText: 'Ok'
+      }).then((result) => {
+        window.location.reload();
+      })
+    }).fail(function (error) {
+      console.log('error', error)
+      Swal.fire({
+        title: 'Lỗi!',
+        text: "Lỗi lưu thông tin hồ sơ bệnh án",
+        icon: 'error',
+        confirmButtonText: 'Cool'
+      })
+    });
+  });
+
+</script>
