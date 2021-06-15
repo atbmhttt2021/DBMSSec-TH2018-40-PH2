@@ -13,15 +13,15 @@
           <input id="recordId" type="text" class="w-100 px-2" disabled>
         </div>
         <div class="justify-content-between py-2">
-          <label class="pr-2" for="inputConclusion">Kết luận bệnh*</label>
-          <textarea id="inputConclusion" class="form-control" required></textarea>
+          <label class="pr-2" for="inputMedicalConclusion">Kết luận bệnh*</label>
+          <textarea id="inputMedicalConclusion" class="form-control" required></textarea>
         </div>
       </div>
 
       <div class="modal-footer py-1">
         <button id="btnSaveConclusion" type="button" class="btn btn-success">Lưu</button>
         <button id="btnLoadServices" type="button" class="btn btn-success">Thêm dịch vụ</button>
-        <button id="btnLoadPrescription" type="button" class="btn btn-success">Kê đơn thuốc</button>
+        <button id="btnLoadPrescription" type="button" class="btn btn-success">Thêm đơn thuốc</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
       </div>
 
@@ -42,7 +42,7 @@
         contentType: 'application/json'
       }).done(function (data) {
         if (data) {
-          $('#seeDoctorModal #inputConclusion').val(data.KETLUANBS);
+          $('#seeDoctorModal #inputMedicalConclusion').val(data.KETLUANBS);
         }
       }).fail(function (error) {
         console.log('error', error)
@@ -60,11 +60,11 @@
     document.getElementById('seeDoctorModal').reset();
   });
 
-  $('#btnSaveConclusion').on('click', function (event) {
+  $('#seeDoctorModal #btnSaveConclusion').on('click', function (event) {
     const id = $('#selectedVal').text();
     if (id) {
       const dataToPost = {
-        KETLUANBS: $('#seeDoctorModal #inputConclusion').val()
+        KETLUANBS: $('#seeDoctorModal #inputMedicalConclusion').val()
       }
 
       const jsonToPost = JSON.stringify(dataToPost);
@@ -92,11 +92,11 @@
     }
   });
 
-  $('#btnLoadServices').on('click', function (event) {
+  $('#seeDoctorModal #btnLoadServices').on('click', function (event) {
     $('#addServicesModal').modal('show');
   });
 
-  $('#btnLoadPrescription').on('click', function (event) {
-    $('#addMedicinesModal').modal('show');
+  $('#seeDoctorModal #btnLoadPrescription').on('click', function (event) {
+    $('#addPrescriptionModal').modal('show');
   });
 </script>

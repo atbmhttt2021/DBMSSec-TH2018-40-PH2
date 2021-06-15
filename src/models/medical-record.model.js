@@ -1,6 +1,6 @@
 const moment = require('moment');
 const conn = require('../utils/db');
-const schema = 'SYSADMIN';
+const { schema } = require('../utils/config');
 
 module.exports = credenticals => {
   const db = conn(credenticals);

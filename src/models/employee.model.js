@@ -1,5 +1,5 @@
 const conn = require('../utils/db');
-const schema = 'SYSADMIN';
+const { schema } = require('../utils/config');
 
 module.exports = credenticals => {
   const db = conn(credenticals);
@@ -58,6 +58,20 @@ module.exports = credenticals => {
       .select('NHANVIEN.ID_NHANVIEN', 'NHANVIEN.TENNV')
       .withSchema(schema)
       .where('DONVI.TENDV', 'like', 'Khoa%');
+    },
+    salemen() {
+      return db('NHANVIEN')
+      .join('DONVI', 'DONVI.ID_DONVI', '=', 'NHANVIEN.DONVI')
+      .select('NHANVIEN.ID_NHANVIEN', 'NHANVIEN.TENNV')
+      .withSchema(schema)
+      .where('DONVI.TENDV', 'like', '%bán thuốc%');
+    },
+    cashiers() {
+      return db('NHANVIEN')
+      .join('DONVI', 'DONVI.ID_DONVI', '=', 'NHANVIEN.DONVI')
+      .select('NHANVIEN.ID_NHANVIEN', 'NHANVIEN.TENNV')
+      .withSchema(schema)
+      .where('DONVI.TENDV', 'like', '%tài vụ%');
     },
   }
 };

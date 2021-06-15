@@ -1,5 +1,5 @@
 <!-- Modal add services -->
-<form class="modal fade" id="addServicesModal" style="overflow-y: auto">
+<div class="modal fade" id="addServicesModal" style="overflow-y: auto">
   <div class="modal-dialog modal-md">
     <div class="modal-content">
       <div class="modal-header py-2">
@@ -12,24 +12,136 @@
           <label class="pr-2" for="recordId">Mã hồ sơ khám bệnh:</label>
           <input id="recordId" type="text" class="w-100 px-2" disabled>
         </div>
+        <form id="addServiceRecord" class="border-top pt-2">
+          <div class="form-group row">
+            <label for="selectService" class="col-sm-3 col-form-label">Dịch vụ*</label>
+            <div class="col-sm-9">
+              <select id="selectService" class="custom-select" style="width: 100%" required></select>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="inputConclusion" class="col-sm-3 col-form-label">Kết luận</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control" id="inputConclusion" required>
+            </div>
+          </div>
+          <div class="text-right">
+            <button type="submit" class="btn btn-sm btn-success">Thêm mới</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-header py-2">
+        <h6 class="modal-title">Dịch vụ đã sử dụng</h6>
+      </div>
+
+      <div class="modal-body">
+        <div id="serviceList"></div>
       </div>
 
       <div class="modal-footer py-1">
-        <button type="submit" class="btn btn-success">Xong</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
       </div>
 
     </div>
   </div>
-</form>
+</div>
 
 <script>
+  $('#selectService').select2({
+    placeholder: "Chưa chọn",
+    ajax: {
+      url: `/services/list`,
+      dataType: 'json',
+      processResults: function (data) {
+        return {
+          results: data.map(item => ({ ...item, id: item.ID_DICHVU, text: item.TENDV }))
+        };
+      }
+    },
+    language: {
+      noResults: () => "Không tìm thấy dữ liệu!"
+    }
+  });
 
+  const getServiceRow = (name, serviceId, detail) => {
+    return `<div class="border-bottom py-2">
+      <div class="form-group row mb-0">
+        <label class="col-sm-9 col-form-label">Dịch vụ: ${name}</label>
+        <div class="col-sm-3 text-right">
+        <button type="button" class="btn btn-sm btn-danger">Xóa</button>
+        </div>
+      </div> ${detail ? `<small>Kết luận: ${detail}</small>` : ''}
+    </div>`
+  }
+  const getServiceRecords = id => {
+    $.ajax({
+      url: `/service-records/${+id}`,
+      type: 'GET',
+      dataType: 'json',
+      contentType: 'application/json'
+    }).done(function (data) {
+      if (data) {
+        const serviceList = $(`<div></div>`);
+        data.forEach(item => {
+          serviceList.append(getServiceRow(item.TENDV, item.ID_DICHVU, item.KETLUAN));
+        })
+        $('#serviceList').html(serviceList)
+      }
+    }).fail(function (error) {
+      console.log('error', error)
+      Swal.fire({
+        title: 'Lỗi!',
+        text: "Lỗi thông tin hồ sơ dịch vu",
+        icon: 'error',
+        confirmButtonText: 'Cool'
+      })
+    });
+  }
+
+  // On show modal
   $('#addServicesModal').on('show.bs.modal', function (event) {
     const id = $('#selectedVal').text();
     if (id) {
       $('#addServicesModal #recordId').val(id);
+      getServiceRecords(id);
     }
+  });
+
+  //Add service record
+  $("#addServiceRecord").submit(function (e) {
+    e.preventDefault();
+    const id = $('#selectedVal').text();
+    const dataToPost = {
+      ID_KHAMBENH: +id,
+      ID_DICHVU: $('#addServiceRecord #selectService').select2('data')[0].id,
+      KETLUAN: $('#addServiceRecord #inputConclusion').val(),
+    }
+    console.log('dataToPost :>> ', dataToPost);
+    const jsonToPost = JSON.stringify(dataToPost);
+    $.ajax({
+      url: `/service-records`,
+      type: 'POST',
+      dataType: 'json',
+      data: jsonToPost,
+      contentType: 'application/json'
+    }).done(function (data) {
+      Swal.fire({
+        title: 'Hoàn thành!',
+        icon: 'success',
+        confirmButtonText: 'Ok'
+      }).then((result) => {
+        getServiceRecords(id);
+      })
+    }).fail(function (error) {
+      console.log('error', error)
+      Swal.fire({
+        title: 'Lỗi!',
+        text: "Lỗi đã sử dụng dịch vụ này rồi",
+        icon: 'error',
+        confirmButtonText: 'Cool'
+      })
+    });
   });
 
 </script>

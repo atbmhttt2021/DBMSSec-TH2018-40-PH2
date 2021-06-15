@@ -1,17 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const conn = require('../utils/db');
-const list = require('../mock/chamcong.json');
+const timekeeperModel = require('../models/timekeeper.model');
 
-// List all
-router.get('/',  function (req, res) {
+// Load page
+router.get('/', async function (req, res) {
   const data = {
     path: 'timekeeper',
-    pageTitle: "Chấm công",
+    pageTitle: "Quản lý bệnh viện|Chấm công",
   }
   try {
-    const db = conn(req.session.user);
-    data.list = list;
+    const model = timekeeperModel(req.session.passport.user)
+    data.list = await model.all();
   } catch (error) {
     console.log(error);
     data.error = {
@@ -22,5 +21,6 @@ router.get('/',  function (req, res) {
     res.render('timekeeper', data);
   }
 })
+
 
 module.exports = router;

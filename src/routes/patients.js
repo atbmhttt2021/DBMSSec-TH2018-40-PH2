@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const patientModel = require('../models/patient.model');
 
-// List all
+// Load page
 router.get('/', async function (req, res) {
   const data = {
     path: 'patients',

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const serviceModel = require('../models/service.model');
 
-// List all
+// Load page
 router.get('/', async function (req, res) {
   const data = {
     path: 'services',
@@ -21,6 +21,14 @@ router.get('/', async function (req, res) {
     res.render('services', data);
   }
 })
+
+// List all
+router.get('/list', async function (req, res) {
+  const model = serviceModel(req.session.passport.user)
+  const list = await model.all();
+  res.status(200).json(list);
+})
+
 
 // Get one
 router.get('/:id', async function (req, res) {

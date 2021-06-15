@@ -4,7 +4,6 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title><%= pageTitle %></title>
   <%- include('../layouts/head'); -%>
   <!-- Custom styles -->
   <link href="styles/dashboard.css" rel="stylesheet">
@@ -24,8 +23,9 @@
             <% } %>
             <% if (locals.list) { %>
               <div
-                class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center">
-                <h1 class="h4"><%= pageTitle %></h1>
+                class="justify-content-between flex-wrap flex-md-nowrap align-items-center">
+                <h1 class="h4">Danh sách chấm công</h1>
+                <i>(Hệ thống tự động chấm công khi người dùng đăng nhập lần đầu trong ngày)</i>
               </div>
 
               <div class="table-responsive card-body">
@@ -33,20 +33,16 @@
                   <thead>
                     <tr>
                       <th></th>
-                      <th scope="col">#</th>
-                      <th scope="col">ID_NHANVIEN</th>
-                      <th scope="col">NGAY</th>
-                      <th scope="col">THOIGIAN</th>
+                      <th scope="col">Mã nhân viên</th>
+                      <th scope="col">Thời gian</th>
                     </tr>
                   </thead>
                   <tbody>
                     <% for(let i=0; i<list.length; i++) { %>
                       <tr>
                         <td class="select-checkbox"></td>
-                        <th scope="row"><%= i + 1 %></th>
                         <td><%= list[i].ID_NHANVIEN %></td>
-                        <td><%= list[i].NGAY %></td>
-                        <td><%= list[i].THOIGIAN %></td>
+                        <td><%= list[i].THOIGIAN ? list[i].THOIGIAN.toLocaleString() : '' %></td>
                       </tr>
                       <% } %>
                   </tbody>

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const employeeModel = require('../models/employee.model');
 
-// List all
+// Load page
 router.get('/', async function (req, res) {
   const data = {
     path: 'employees',
@@ -26,6 +26,18 @@ router.get('/', async function (req, res) {
 router.get('/doctors', async function (req, res) {
   const model = employeeModel(req.session.passport.user)
   const list = await model.doctors();
+  res.status(200).json(list);
+})
+// List salemen
+router.get('/salemen', async function (req, res) {
+  const model = employeeModel(req.session.passport.user)
+  const list = await model.salemen();
+  res.status(200).json(list);
+})
+// List cashiers
+router.get('/cashiers', async function (req, res) {
+  const model = employeeModel(req.session.passport.user)
+  const list = await model.cashiers();
   res.status(200).json(list);
 })
 
