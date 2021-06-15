@@ -1,0 +1,144 @@
+<!-- Modal Add or update -->
+<form class="modal fade" id="detailModal">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header py-2">
+        <h6 class="modal-title">Thông tin hồ sơ dịch vụ</h6>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="justify-content-between py-2">
+          <label class="pr-2" for="selectRecordId">Mã khám bệnh*</label>
+          <select id="selectRecordId" class="custom-select" style="width: 100%" required></select>
+        </div>
+        <div class="justify-content-between py-2">
+          <label class="pr-2" for="selectServiceId">Dịch vụ*</label>
+          <select id="selectServiceId" class="custom-select" style="width: 100%" required></select>
+        </div>
+        <div class="justify-content-between py-2">
+          <label class="pr-2" for="inputConclusion">Kết luận*</label>
+          <input type="text" class="form-control" id="inputConclusion" required>
+        </div>
+      </div>
+
+
+      <div class="modal-footer py-1">
+        <button type="submit" class="btn btn-success"">Lưu</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+      </div>
+
+    </div>
+  </div>
+</form>
+
+<script>
+  // Get medical record selectbox
+  $('#selectRecordId').select2({
+    placeholder: "Chưa chọn",
+    ajax: {
+      url: `/medical-records/list`,
+      dataType: 'json',
+      processResults: function (data) {
+        return {
+          results: data.map(item => ({ ...item, id: item.ID_KHAMBENH, text: item.ID_KHAMBENH }))
+        };
+      }
+    },
+    language: {
+      noResults: () => "Không tìm thấy dữ liệu!"
+    }
+  });
+  // Get service selectbox
+  $('#selectServiceId').select2({
+    placeholder: "Chưa chọn",
+    ajax: {
+      url: `/services/list`,
+      dataType: 'json',
+      processResults: function (data) {
+        return {
+          results: data.map(item => ({ ...item, id: item.ID_DICHVU, text: item.TENDV }))
+        };
+      }
+    },
+    language: {
+      noResults: () => "Không tìm thấy dữ liệu!"
+    }
+  });
+
+  // Get detail
+  $('#detailModal').on('show.bs.modal', function (event) {
+    const id = $('#selectedVal').text();
+    const serviceId = $('#selectedSubVal').text();
+    if (id && serviceId) {
+      $('#selectRecordId').attr('disabled', true);
+      $('#selectServiceId').attr('disabled', true);
+      $.ajax({
+        url: `/service-records/${+id}/${+serviceId}`,
+        type: 'GET',
+        dataType: 'json',
+        contentType: 'application/json'
+      }).done(function (data) {
+        if (data) {
+          const option = new Option(data.ID_KHAMBENH, data.ID_KHAMBENH, true, true);
+          $("#selectRecordId").append(option).trigger('change');
+          const serviceOption = new Option(data.TENDV, data.ID_DICHVU, true, true);
+          $("#selectServiceId").append(serviceOption).trigger('change');
+          $('#inputConclusion').val(data.KETLUAN);
+        }
+      }).fail(function (error) {
+        console.log('error', error)
+        Swal.fire({
+          title: 'Lỗi!',
+          text: "Lỗi thông tin nhân viên",
+          icon: 'error',
+          confirmButtonText: 'Cool'
+        })
+      });
+    }
+    if (!id) {
+      $('#inputId').hide();
+      $('label[for=inputId]').hide();
+    }
+
+  });
+
+  $('#detailModal').on('hidden.bs.modal', function (event) {
+    document.getElementById('detailModal').reset();
+  });
+
+  // Add or udate
+  $("#detailModal").submit(function (e) {
+    e.preventDefault();
+    const id = $('#selectedVal').text();
+    const dataToPost = {
+      ID_KHAMBENH: $('#detailModal #selectRecordId').val(),
+      ID_DICHVU: $('#detailModal #selectServiceId').val(),
+      KETLUAN: $('#detailModal #inputConclusion').val()
+    }
+    const jsonToPost = JSON.stringify(dataToPost);
+    $.ajax({
+      url: '/service-records',
+      type: id ? 'PUT' : 'POST',
+      dataType: 'json',
+      data: jsonToPost,
+      contentType: 'application/json'
+    }).done(function (data) {
+      Swal.fire({
+        title: 'Hoàn thành!',
+        icon: 'success',
+        confirmButtonText: 'Ok'
+      }).then((result) => {
+        window.location.reload();
+      })
+    }).fail(function (error) {
+      console.log('error', error)
+      Swal.fire({
+        title: 'Lỗi!',
+        text: "Lỗi lưu thông tin hồ sơ dịch vu",
+        icon: 'error',
+        confirmButtonText: 'Cool'
+      })
+    });
+  });
+</script>

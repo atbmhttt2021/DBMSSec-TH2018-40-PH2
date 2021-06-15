@@ -1,0 +1,104 @@
+<!-- Modal add services -->
+<form class="modal fade" id="addMedicineDetailModal" style="overflow-y: auto">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header py-2">
+        <h6 class="modal-title">Thêm thuốc</h6>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group row">
+          <label for="selectMedicine" class="col-sm-3 col-form-label">Thuốc*</label>
+          <div class="col-sm-9">
+            <select id="selectMedicine" class="custom-select" style="width: 100%" required></select>
+          </div>
+        </div>
+        <div class="justify-content-between">
+        </div>
+        <div class="form-group row">
+          <label for="inputAmount" class="col-sm-3 col-form-label">Số lượng*</label>
+          <div class="col-sm-9">
+            <input type="number" class="form-control" id="inputAmount" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="inputDosage" class="col-sm-3 col-form-label">Liều dùng*</label>
+          <div class="col-sm-9">
+            <input type="text" class="form-control" id="inputDosage" required>
+          </div>
+        </div>
+        <div class="justify-content-between py-2">
+          <label class="pr-2" for="inputDescription">Mô tả</label>
+          <textarea id="inputDescription" class="form-control"></textarea>
+        </div>
+</form>
+</div>
+
+<div class="modal-footer py-1">
+  <button type="submit" class="btn btn-success">Lưu</button>
+  <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+</div>
+
+</div>
+</div>
+</form>
+
+<script>
+  $('#addMedicineDetailModal #selectMedicine').select2({
+    placeholder: "Chưa chọn",
+    ajax: {
+      url: `/medicines/list`,
+      dataType: 'json',
+      processResults: function (data) {
+        return {
+          results: data.map(item => ({ ...item, id: item.ID_THUOC, text: item.TENTHUOC }))
+        };
+      }
+    },
+    language: {
+      noResults: () => "Không tìm thấy dữ liệu!"
+    }
+  });
+
+  //Add service record
+  $("#addMedicineDetailModal").submit(function (e) {
+    e.preventDefault();
+    const dataToPost = {
+      ID_DONTHUOC: $('#prescriptionDetailModal #inputId').val(),
+      ID_THUOC: $('#addMedicineDetailModal #selectMedicine').select2('data')[0].id,
+      SOLUONG: $('#addMedicineDetailModal #inputAmount').val(),
+      LIEUDUNG: $('#addMedicineDetailModal #inputDosage').val(),
+      MOTA: $('#addMedicineDetailModal #inputDescription').val()
+    }
+    const jsonToPost = JSON.stringify(dataToPost);
+    $.ajax({
+      url: '/medicine-details',
+      type: 'POST',
+      dataType: 'json',
+      data: jsonToPost,
+      contentType: 'application/json'
+    }).done(function (data) {
+      Swal.fire({
+        title: 'Hoàn thành!',
+        icon: 'success',
+        confirmButtonText: 'Ok'
+      }).then((result) => {
+        $('#addMedicineDetailModal').modal('hide');
+        const prescriptionId = $('#prescriptionDetailModal #inputId').val()
+        if (prescriptionId) {
+          getMedicineDetails(prescriptionId);
+        }
+      })
+    }).fail(function (error) {
+      console.log('error', error)
+      Swal.fire({
+        title: 'Lỗi!',
+        text: "Lỗi lưu thông tin chi tiết đơn thuốc",
+        icon: 'error',
+        confirmButtonText: 'Cool'
+      })
+    });
+  });
+
+</script>

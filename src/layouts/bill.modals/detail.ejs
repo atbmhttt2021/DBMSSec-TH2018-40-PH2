@@ -1,0 +1,316 @@
+<!-- Modal Add or update -->
+<form class="modal fade" id="detailModal">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header py-2">
+        <h6 class="modal-title">Thông tin hóa đơn</h6>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group row">
+          <label for="inputId" class="col-sm-3 col-form-label">Mã hóa đơn*</label>
+          <div class="col-sm-9">
+            <input type="text" class="form-control" id="inputId" disabled>
+          </div>
+        </div>
+        <div class="justify-content-between py-2">
+          <label class="pr-2" for="selectRecordId">Mã khám bệnh*</label>
+          <select id="selectRecordId" class="custom-select" style="width: 100%" required></select>
+        </div>
+
+        <div class="justify-content-between py-2">
+          <label class="pr-2" for="selectCuratorId">Người phụ trách*</label>
+          <select id="selectCuratorId" class="custom-select" style="width: 100%" required></select>
+        </div>
+
+        <div id="majorCosts">
+          <div class="justify-content-between py-2">
+            <label for="inputServiceCosts" class="col-form-label">Tiền dịch vụ</label>
+            <div class="input-group">
+              <input type="number" class="form-control" id="inputServiceCosts" disabled>
+              <span class="input-group-text">đ</span>
+            </div>
+          </div>
+
+          <div>+</div>
+
+          <div class="justify-content-between py-2">
+            <label for="inputMedicineCosts" class="col-form-label">Tiền thuốc</label>
+            <div class="input-group">
+              <input type="number" class="form-control" id="inputMedicineCosts" disabled>
+              <span class="input-group-text">đ</span>
+            </div>
+          </div>
+
+          <div>+</div>
+        </div>
+
+        <div class="justify-content-between py-2">
+          <label for="inputOtherCosts" class="col-form-label">Phụ thu</label>
+          <div class="input-group">
+            <input type="number" class="form-control" id="inputOtherCosts" onchange="onChangeOtherCosts()">
+            <span class="input-group-text">đ</span>
+          </div>
+        </div>
+
+        <div>=</div>
+
+        <div class="justify-content-between py-2">
+          <label for="inputTotalPrice" class="col-form-label">Tổng tiền</label>
+          <div class="input-group">
+            <input type="number " class="form-control" id="inputTotalPrice" disabled>
+            <span class="input-group-text">đ</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer py-1 border-top-0 border-bottom">
+        <button type="submit" class="btn btn-success">Lưu</button>
+      </div>
+
+      <div class="modal-header py-2">
+        <h6 class="modal-title">Danh sách chi tiết hóa đơn</h6>
+      </div>
+      <div class="modal-body">
+        <div id="detailList">
+          <i>(Trống)</i>
+        </div>
+      </div>
+
+      <div class="modal-footer py-1 border-top-0">
+        <button id="btnAddDetail" type="button" class="btn btn-success" disabled>Thêm chi tiết hóa đơn</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+      </div>
+
+    </div>
+  </div>
+</form>
+
+<script>
+  // Get medical record selectbox
+  $('#detailModal #selectRecordId').select2({
+    placeholder: "Chưa chọn",
+    ajax: {
+      url: `/medical-records/list`,
+      dataType: 'json',
+      processResults: function (data) {
+        return {
+          results: data.map(item => ({ ...item, id: item.ID_KHAMBENH, text: item.ID_KHAMBENH }))
+        };
+      }
+    },
+    language: {
+      noResults: () => "Không tìm thấy dữ liệu!"
+    }
+  });
+  // Get curator selectbox
+  $('#detailModal #selectCuratorId').select2({
+    placeholder: "Chưa chọn",
+    ajax: {
+      url: `/employees/cashiers`,
+      dataType: 'json',
+      processResults: function (data) {
+        return {
+          results: data.map(item => ({ ...item, id: item.ID_NHANVIEN, text: item.TENNV }))
+        };
+      }
+    },
+    language: {
+      noResults: () => "Không tìm thấy dữ liệu!"
+    }
+  });
+
+  // Get detail
+  $('#detailModal').on('show.bs.modal', function (event) {
+    const id = $('#selectedVal').text();
+    if (id) {
+      $('#detailModa #inputId').hide();
+      $('#detailModa label[for=inputId]').hide();
+      $('#detailModal #inputId').val(id);
+      $('#detailModal #selectRecordId').attr('disabled', true);
+      $('#detailModal #selectCuratorId').attr('disabled', true);
+      $('#detailModal #btnAddDetail').attr('disabled', false);
+      $('#majorCosts').show();
+      $.ajax({
+        url: `/bills/${+id}`,
+        type: 'GET',
+        dataType: 'json',
+        contentType: 'application/json'
+      }).done(function (data) {
+        if (data) {
+          const option = new Option(data.ID_KHAMBENH, data.ID_KHAMBENH, true, true);
+          $("#selectRecordId").append(option).trigger('change');
+          const serviceOption = new Option(data.TENNV, data.ID_NHAVIEN, true, true);
+          $("#selectCuratorId").append(serviceOption).trigger('change');
+          const serviceCosts = data.TIENDICHVU || 0;
+          const medicineCosts = data.TIENTHUOC || 0;
+          const othersCosts = data.PHUTHU || 0;
+          $('#inputServiceCosts').val(serviceCosts);
+          $('#inputMedicineCosts').val(medicineCosts);
+          $('#inputOtherCosts').val(othersCosts);
+          const sum = +serviceCosts + medicineCosts + othersCosts;
+          $('#inputTotalPrice').val(sum);
+          getBillDetails(data.ID_HOADON);
+        }
+      }).fail(function (error) {
+        console.log('error', error)
+        Swal.fire({
+          title: 'Lỗi!',
+          text: "Lỗi thông tin hóa đơn",
+          icon: 'error',
+          confirmButtonText: 'Cool'
+        })
+      });
+    }
+    if (!id) {
+      $('#inputId').hide();
+      $('label[for=inputId]').hide();
+      $('#selectRecordId').attr('disabled', false);
+      $('#selectCuratorId').attr('disabled', false);
+      $('#btnAddDetail').attr('disabled', true);
+      $("#selectRecordId").val('').trigger('change');
+      $("#selectCuratorId").val('').trigger('change');
+      $('#majorCosts').hide();
+      $('#detailModal #detailList').html('')
+    }
+
+  });
+
+  const getDetailRow = (data) => {
+    return `<div class="border-bottom py-2">
+      <div class="form-group row mb-0">
+        <div class="col-sm-9">
+          <div class="col-form-label">Mã hóa đơn: ${data.ID_HOADON}</div>
+          <div class="col-form-label">Dịch vụ: ${data.TENDV}</div>
+        </div>
+        <div class="col-sm-3 text-right">
+          <button type="button" class="btn btn-sm btn-danger">Xóa</button>
+        </div>
+      </div> 
+    </div>`
+  }
+  const getBillDetails = billId => {
+    $.ajax({
+      url: `/bill-details/${+billId}`,
+      type: 'GET',
+      dataType: 'json',
+      contentType: 'application/json'
+    }).done(function (data) {
+      if (data && data.length) {
+        const details = $(`<div></div>`);
+        data.forEach(item => {
+          details.append(getDetailRow(item));
+        })
+        $('#detailModal #detailList').html(details)
+      }
+    }).fail(function (error) {
+      console.log('error', error)
+      Swal.fire({
+        title: 'Lỗi!',
+        text: "Lỗi danh sách chi tiết hóa đơn",
+        icon: 'error',
+        confirmButtonText: 'Cool'
+      })
+    });
+  }
+
+
+  $('#detailModal').on('hidden.bs.modal', function (event) {
+    document.getElementById('detailModal').reset();
+  });
+
+
+  // Add or udate
+  $("#detailModal").submit(function (e) {
+    e.preventDefault();
+    const id = $('#selectedVal').text();
+    const dataToPost = {
+      ID_KHAMBENH: $('#detailModal #selectRecord').val()
+    }
+    const jsonToPost = JSON.stringify(dataToPost);
+    $.ajax({
+      url: `/prescriptions/${id ? +id : ''}`,
+      type: id ? 'PUT' : 'POST',
+      dataType: 'json',
+      data: jsonToPost,
+      contentType: 'application/json'
+    }).done(function (data) {
+      Swal.fire({
+        title: 'Hoàn thành!',
+        icon: 'success',
+        confirmButtonText: 'Ok'
+      }).then((result) => {
+        if (data.id) {
+          $('#inputId').val(data.id);
+          $('#inputId').show();
+          $('label[for=inputId]').show();
+          $('#btnAddDetail').attr('disabled', false);
+        }
+      })
+    }).fail(function (error) {
+      console.log('error', error)
+      Swal.fire({
+        title: 'Lỗi!',
+        text: "Lỗi lưu thông tin đơn thuốc",
+        icon: 'error',
+        confirmButtonText: 'Cool'
+      })
+    });
+  });
+
+
+  $('#detailModal').on('hidden.bs.modal', function (event) {
+    document.getElementById('detailModal').reset();
+  });
+
+  // Add or udate
+  $("#detailModal").submit(function (e) {
+    e.preventDefault();
+    const id = $('#selectedVal').text();
+    const recordId = $('#detailModal #selectRecordId').val();
+    const curatorId = $('#detailModal #selectCuratorId').val();
+    const dataToPost = {
+      ID_KHAMBENH: +recordId,
+      NGUOIPT: +curatorId,
+      TONGTIEN: +totalPrice
+    }
+    const jsonToPost = JSON.stringify(dataToPost);
+    $.ajax({
+      url: '/bills',
+      type: id ? 'PUT' : 'POST',
+      dataType: 'json',
+      data: jsonToPost,
+      contentType: 'application/json'
+    }).done(function (data) {
+      Swal.fire({
+        title: 'Hoàn thành!',
+        icon: 'success',
+        confirmButtonText: 'Ok'
+      }).then((result) => {
+        window.location.reload();
+      })
+    }).fail(function (error) {
+      console.log('error', error)
+      Swal.fire({
+        title: 'Lỗi!',
+        text: "Lỗi lưu thông tin hóa đơn",
+        icon: 'error',
+        confirmButtonText: 'Cool'
+      })
+    });
+  });
+
+  $('#btnAddDetail').on('click', function (event) {
+    $('#addDetailModal').modal('show');
+  });
+
+  function onChangeOtherCosts() {
+    const serviceCosts = $('#inputServiceCosts').val() || 0;
+    const medicineCosts = $('#inputMedicineCosts').val() || 0;
+    const othersCosts = $('#inputOtherCosts').val() || 0;
+    const sum = +serviceCosts + medicineCosts + othersCosts;
+    $('#inputTotalPrice').val(+sum);
+  }
+</script>

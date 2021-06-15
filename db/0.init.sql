@@ -1,0 +1,6 @@
+-- SQLPlus
+connect / as sysdba;
+
+CREATE USER sysadmin IDENTIFIED BY admin QUOTA 10M ON USERS;
+GRANT ALL PRIVILEGES TO sysadmin;
+GRANT SELECT ANY DICTIONARY TO sysadmin;
