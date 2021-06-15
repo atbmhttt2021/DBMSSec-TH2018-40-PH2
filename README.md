@@ -1,4 +1,4 @@
-     Phần hệ bệnh viện
+     Phân hệ bệnh viện
 
 ## Requirement
 * Download and install : [Git](https://git-scm.com/downloads)
