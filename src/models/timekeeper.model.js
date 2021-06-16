@@ -14,10 +14,12 @@ module.exports = credenticals => {
 
     async checkIn(username) {
       // Find id by username
-      const { ID_NHANVIEN } = await db('NHANVIEN')
+      const employee = await db('NHANVIEN')
         .withSchema(schema)
         .where('VAITRO', username.toUpperCase())
         .first('ID_NHANVIEN')
+      if (!employee) return null;
+      const { ID_NHANVIEN } = employee;
       if (!ID_NHANVIEN) return null;
 
       // Count existing Check in to day
@@ -29,7 +31,7 @@ module.exports = credenticals => {
       if (!existCheckinCounter) return null;
 
       // If count > 0
-      const { COUNT } = existCheckinCounter;
+      const { COUNT } = existCheckinCounter[0];
       if (COUNT !== 0) return null;
 
       // If count = 0

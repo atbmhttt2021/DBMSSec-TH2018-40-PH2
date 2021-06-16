@@ -14,20 +14,20 @@ router.get('/login', withNoAuth, function (req, res) {
 
 // Login action
 router.post('/login', (req, res, next) => passport.authenticate('local', (error, user, info) => {
+  console.log(' post(/login user :>> ', user);
   if (error) {
     return res.status(500).json(error);
   }
   if (!user) {
-    return res.status(401).json({ message: 'Lỗi đăng nhập' });
+    return res.status(401).json({ message: 'Lỗi sai thông tin đăng nhập' });
   }
   req.logIn(user, async function (err) {
     if (err) {
       return next(err);
     }
-
     // 
     const model = timekeeperModel(user)
-    await model.checkIn(user.username);
+    // await model.checkIn(user.username);
     return res.status(200).json({ status: 'OK' });
   })
 

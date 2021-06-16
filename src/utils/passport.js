@@ -9,8 +9,10 @@ module.exports = _ => {
     (username, password, done) => {
       (async _ => {
         const db = conn({ username, password });
+        await db.raw('SELECT 1 FROM DUAL');
         try {
-          await db.raw('SELECT 1 FROM DUAL');
+          const test = await db.raw('SELECT 1 FROM DUAL');
+          console.log('test', test);
           const user = {
             username,
             password
