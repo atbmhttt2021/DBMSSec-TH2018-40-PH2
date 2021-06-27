@@ -5,6 +5,7 @@ const medicalRecordModel = require('../models/medical-record.model');
 // Load page
 router.get('/', async function (req, res) {
   const data = {
+    user: req.user,
     path: 'medical-records',
     pageTitle: "Quản lý bệnh viện|Hồ sơ khám bệnh",
   }

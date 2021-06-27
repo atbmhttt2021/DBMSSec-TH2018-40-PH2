@@ -5,6 +5,7 @@ const billModel = require('../models/bill.model');
 // Load page
 router.get('/', async function (req, res) {
   const data = {
+    user: req.user,
     path: 'bills',
     pageTitle: "Quản lý bệnh viện|Hóa đơn",
   }

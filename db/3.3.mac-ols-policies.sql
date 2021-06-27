@@ -1,0 +1,2 @@
+-- -- Check if OLS is active on your database:
+-- SELECT VALUE FROM v$option WHERE parameter = 'Oracle Label Security';

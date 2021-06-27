@@ -27,7 +27,7 @@ router.post('/login', (req, res, next) => passport.authenticate('local', (error,
     }
     // 
     const model = timekeeperModel(user)
-    // await model.checkIn(user.username);
+    await model.checkIn(user.username);
     return res.status(200).json({ status: 'OK' });
   })
 

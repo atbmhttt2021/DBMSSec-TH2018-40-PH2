@@ -5,6 +5,7 @@ const serviceRecordModel = require('../models/service-record.model');
 // Load page
 router.get('/', async function (req, res) {
   const data = {
+    user: req.user,
     path: 'service-records',
     pageTitle: "Quản lý bệnh viện|Hồ sơ dịch vụ",
   }

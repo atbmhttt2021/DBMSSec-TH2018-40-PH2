@@ -5,6 +5,7 @@ const employeeModel = require('../models/employee.model');
 // Load page
 router.get('/', async function (req, res) {
   const data = {
+    user: req.user,
     path: 'employees',
     pageTitle: "Quản lý bệnh viện|Nhân viên",
   }

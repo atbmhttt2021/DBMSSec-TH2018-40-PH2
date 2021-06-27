@@ -5,6 +5,7 @@ const prescriptionModel = require('../models/prescription.model');
 // Load page
 router.get('/', async function (req, res) {
   const data = {
+    user: req.user,
     path: 'prescriptions',
     pageTitle: "Quản lý bệnh viện|Đơn thuốc",
   }
