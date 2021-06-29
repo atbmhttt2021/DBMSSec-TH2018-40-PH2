@@ -83,7 +83,7 @@
         if (data) {
           $('#prescriptionDetailModal #inputId').val(data.ID_DONTHUOC);
           $('#prescriptionDetailModal #recordId').val(data.ID_KHAMBENH);
-          const option = new Option(data.TENNV, data.NGUOILAP, true, true);
+          const option = new Option(data.TENNV, data.NVPT, true, true);
           $("#prescriptionDetailModal #selectDealer").append(option).trigger('change');
           getMedicineDetails(data.ID_DONTHUOC)
         }
@@ -150,7 +150,7 @@
     e.preventDefault();
     const id = $('#prescriptionDetailModal #inputId').val();
     const dataToPost = {
-      NGUOILAP: $('#prescriptionDetailModal #selectDealer').val()
+      NVPT: $('#prescriptionDetailModal #selectDealer').val()
     }
     const jsonToPost = JSON.stringify(dataToPost);
     $.ajax({
