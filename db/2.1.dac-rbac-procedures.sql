@@ -16,8 +16,8 @@ END create_role;
 
 --create procedure create user
 CREATE OR REPLACE PROCEDURE create_user(
-	pi_username IN NVARCHAR2,
-	pi_password IN NVARCHAR2  ) IS
+	pi_username IN VARCHAR2,
+	pi_password IN VARCHAR2  ) IS
 	
 	user_name NVARCHAR2(20)  	:= pi_username;
 	pwd NVARCHAR2(20) 		:= pi_password;
@@ -34,7 +34,7 @@ BEGIN
 		lv_stmt := 'DROP USER '|| user_name || ' CASCADE';      	
 		EXECUTE IMMEDIATE ( lv_stmt );
    	END IF;
-        lv_stmt := 'CREATE USER ' || user_name || ' IDENTIFIED BY ' || pwd || 'QUOTA 10M ON USERS';
+        lv_stmt := 'CREATE USER ' || user_name || ' IDENTIFIED BY ' || pwd ;
 	DBMS_OUTPUT.put_line(lv_stmt);
 
 	EXECUTE IMMEDIATE ( lv_stmt ); 
@@ -52,19 +52,35 @@ CREATE OR REPLACE PROCEDURE grant_quanLy_privs( pi_rolename IN NVARCHAR2) IS
 	role_name NVARCHAR2(20) := pi_rolename;
     lv_stmt   VARCHAR2 (1000);
 BEGIN
-  lv_stmt:='GRANT SELECT ON DONVI ' || ' TO ' || role_name
-    || '; GRANT SELECT ON NHANVIEN ' || ' TO ' || role_name
-    || '; GRANT SELECT ON BENHNHAN ' || ' TO ' || role_name
-    || '; GRANT SELECT ON HOSOBENHNHAN ' || ' TO ' || role_name
-    || '; GRANT SELECT ON DICHVU ' || ' TO ' || role_name
-    || '; GRANT SELECT ON HOSO_DICHVU ' || ' TO ' || role_name
-    || '; GRANT SELECT ON DONTHUOC ' || ' TO ' || role_name
-    || '; GRANT SELECT ON THUOC ' || ' TO ' || role_name
-    || '; GRANT SELECT ON CHITIETDONTHUOC ' || ' TO ' || role_name
-    || '; GRANT SELECT ON HOADON ' || ' TO ' || role_name
-    || '; GRANT SELECT ON CTHOADON ' || ' TO ' || role_name
-    || '; GRANT SELECT ON CHAMCONG ' || ' TO ' || role_name
+  lv_stmt:='GRANT SELECT ON DONVI  TO ' || role_name
+    || '; GRANT SELECT ON NHANVIEN TO ' || role_name
+    || '; GRANT SELECT ON BENHNHAN TO ' || role_name
+    || '; GRANT SELECT ON HOSOBENHNHAN TO' || role_name
+    || '; GRANT SELECT ON DICHVU TO ' || role_name
+    || '; GRANT SELECT ON HOSO_DICHVU TO' || role_name
+    || '; GRANT SELECT ON DONTHUOC TO ' || role_name
+    || '; GRANT SELECT ON THUOC TO ' || role_name
+    || '; GRANT SELECT ON CHITIETDONTHUOC  TO ' || role_name
+    || '; GRANT SELECT ON HOADON  TO ' || role_name
+    || '; GRANT SELECT ON CTHOADON  TO ' || role_name
+    || '; GRANT SELECT ON CHAMCONG TO ' || role_name
     || ';';
+    -- EXECUTE IMMEDIATE '
+    -- begin
+    --   GRANT SELECT ON DONVI  TO ' || role_name
+    -- || '; GRANT SELECT ON NHANVIEN TO ' || role_name
+    -- || '; GRANT SELECT ON BENHNHAN TO ' || role_name
+    -- || '; GRANT SELECT ON HOSOBENHNHAN TO' || role_name
+    -- || '; GRANT SELECT ON DICHVU TO ' || role_name
+    -- || '; GRANT SELECT ON HOSO_DICHVU TO' || role_name
+    -- || '; GRANT SELECT ON DONTHUOC TO ' || role_name
+    -- || '; GRANT SELECT ON THUOC TO ' || role_name
+    -- || '; GRANT SELECT ON CHITIETDONTHUOC  TO ' || role_name
+    -- || '; GRANT SELECT ON HOADON  TO ' || role_name
+    -- || '; GRANT SELECT ON CTHOADON  TO ' || role_name
+    -- || '; GRANT SELECT ON CHAMCONG TO ' || role_name
+    -- || ';''
+    -- end;';  
 	EXECUTE IMMEDIATE ( lv_stmt ); 
 END grant_quanLy_privs;
 /
@@ -149,26 +165,91 @@ BEGIN
 END grant_ketoan_privs;
 /
 
---Procedure grant privileges to BACSI_DIEUTRI role
-CREATE OR REPLACE PROCEDURE grant_bacsi_privs( pi_rolename IN NVARCHAR2) IS
+-- --Procedure grant privileges to BACSI_DIEUTRI role
+-- CREATE OR REPLACE PROCEDURE grant_bacsi_privs( pi_rolename IN NVARCHAR2) IS
+-- 	role_name NVARCHAR2(20) := pi_rolename;
+--     lv_stmt   VARCHAR2 (1000);
+-- BEGIN
+--   lv_stmt:='GRANT SELECT, UPDATE ON HOSOBENHNHAN ' || ' TO ' || role_name
+--     || '; GRANT SELECT, CREATE ON DONTHUOC ' || ' TO ' || role_name
+--     || '; GRANT SELECT, CREATE, UPDATE ON CHITIETDONTHUOC ' || ' TO ' || role_name
+--     || ';';
+-- 	EXECUTE IMMEDIATE ( lv_stmt ); 
+-- END grant_bacsi_privs;
+-- /
+
+-- --Procedure grant role to role or user 
+-- CREATE OR REPLACE PROCEDURE grant_role_to_role_or_user( pi_rolename IN NVARCHAR2, pi_dest IN NVARCHAR2) IS
+-- 	role_name NVARCHAR2(20) := pi_rolename;
+-- 	role_or_user_name NVARCHAR2(20) := pi_dest;
+--   lv_stmt   VARCHAR2 (1000);
+-- BEGIN
+--   lv_stmt:='GRANT ' || role_name || ' TO ' || role_or_user_name;
+-- 	EXECUTE IMMEDIATE ( lv_stmt ); 
+-- END grant_role_to_role_or_user;
+-- /
+
+-- CREATE OR REPLACE PROCEDURE grant_quanLy_privs( pi_rolename IN NVARCHAR2) IS
+-- 	role_name NVARCHAR2(20) := pi_rolename;
+--     lv_stmt   VARCHAR2 (1000);
+-- BEGIN
+--   -- lv_stmt:='GRANT SELECT ON DONVI  TO ' || role_name
+--   --   || '; GRANT SELECT ON NHANVIEN TO ' || role_name
+--   --   || '; GRANT SELECT ON BENHNHAN TO ' || role_name
+--   --   || '; GRANT SELECT ON HOSOBENHNHAN TO' || role_name
+--   --   || '; GRANT SELECT ON DICHVU TO ' || role_name
+--   --   || '; GRANT SELECT ON HOSO_DICHVU TO' || role_name
+--   --   || '; GRANT SELECT ON DONTHUOC TO ' || role_name
+--   --   || '; GRANT SELECT ON THUOC TO ' || role_name
+--   --   || '; GRANT SELECT ON CHITIETDONTHUOC  TO ' || role_name
+--   --   || '; GRANT SELECT ON HOADON  TO ' || role_name
+--   --   || '; GRANT SELECT ON CTHOADON  TO ' || role_name
+--   --   || '; GRANT SELECT ON CHAMCONG TO ' || role_name
+--   --   || ';';
+-- --    EXECUTE IMMEDIATE 
+--     lv_stmt:='GRANT SELECT ON DONVI  TO :1;
+--       GRANT SELECT ON NHANVIEN TO :1;
+--       GRANT SELECT ON BENHNHAN TO :1;
+--      GRANT SELECT ON HOSOBENHNHAN TO :1;
+--      GRANT SELECT ON DICHVU TO :1;
+--      GRANT SELECT ON HOSO_DICHVU TO :1;
+--     GRANT SELECT ON DONTHUOC TO :1;
+--      GRANT SELECT ON THUOC TO  :1;
+--     GRANT SELECT ON CHITIETDONTHUOC TO :1;
+--      GRANT SELECT ON HOADON  TO :1;
+--      GRANT SELECT ON CTHOADON  TO :1;
+--      GRANT SELECT ON CHAMCONG TO :1;';
+--     EXECUTE IMMEDIATE lv_stmt using role_name;
+-- END grant_quanLy_privs;
+-- /
+
+CREATE OR REPLACE PROCEDURE grant_quanLy_privs( pi_rolename IN NVARCHAR2) IS
 	role_name NVARCHAR2(20) := pi_rolename;
     lv_stmt   VARCHAR2 (1000);
 BEGIN
-  lv_stmt:='GRANT SELECT, UPDATE ON HOSOBENHNHAN ' || ' TO ' || role_name
-    || '; GRANT SELECT, CREATE ON DONTHUOC ' || ' TO ' || role_name
-    || '; GRANT SELECT, CREATE, UPDATE ON CHITIETDONTHUOC ' || ' TO ' || role_name
-    || ';';
-	EXECUTE IMMEDIATE ( lv_stmt ); 
-END grant_bacsi_privs;
+  EXECUTE IMMEDIATE 'GRANT SELECT ON DONVI  TO ' || role_name||'';
+  EXECUTE IMMEDIATE ' GRANT SELECT ON NHANVIEN TO ' || role_name||'';
+   EXECUTE IMMEDIATE ' GRANT SELECT ON BENHNHAN TO ' || role_name||'';
+   EXECUTE IMMEDIATE ' GRANT SELECT ON HOSOBENHNHAN TO' || role_name||'';
+   
+  
+    -- EXECUTE IMMEDIATE '
+    -- begin
+    --   GRANT SELECT ON DONVI  TO ' || role_name
+    -- || '; GRANT SELECT ON NHANVIEN TO ' || role_name
+    -- || '; GRANT SELECT ON BENHNHAN TO ' || role_name
+    -- || '; GRANT SELECT ON HOSOBENHNHAN TO' || role_name
+    -- || '; GRANT SELECT ON DICHVU TO ' || role_name
+    -- || '; GRANT SELECT ON HOSO_DICHVU TO' || role_name
+    -- || '; GRANT SELECT ON DONTHUOC TO ' || role_name
+    -- || '; GRANT SELECT ON THUOC TO ' || role_name
+    -- || '; GRANT SELECT ON CHITIETDONTHUOC  TO ' || role_name
+    -- || '; GRANT SELECT ON HOADON  TO ' || role_name
+    -- || '; GRANT SELECT ON CTHOADON  TO ' || role_name
+    -- || '; GRANT SELECT ON CHAMCONG TO ' || role_name
+    -- || ';''
+    -- end;';  
+--	EXECUTE IMMEDIATE ( lv_stmt ); 
+END grant_quanLy_privs;
 /
-
---Procedure grant role to role or user 
-CREATE OR REPLACE PROCEDURE grant_role_to_role_or_user( pi_rolename IN NVARCHAR2, pi_dest IN NVARCHAR2) IS
-	role_name NVARCHAR2(20) := pi_rolename;
-	role_or_user_name NVARCHAR2(20) := pi_dest;
-  lv_stmt   VARCHAR2 (1000);
-BEGIN
-  lv_stmt:='GRANT ' || role_name || ' TO ' || role_or_user_name;
-	EXECUTE IMMEDIATE ( lv_stmt ); 
-END grant_role_to_role_or_user;
-/
+EXECUTE grant_quanLy_privs('NHANVIEN_QUANLY');
