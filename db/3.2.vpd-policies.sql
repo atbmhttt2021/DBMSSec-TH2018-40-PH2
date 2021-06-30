@@ -88,7 +88,7 @@ create or replace package body vpd_security_package is
       else
         predicate := 'ID_NHANVIEN=sys_context(''benhvien'',''user_id'')';
       end if;
-    return predicate;
+    return NULL;
   end nhanvien_on_select_security;
 
   -- Setup policy VPD 2
