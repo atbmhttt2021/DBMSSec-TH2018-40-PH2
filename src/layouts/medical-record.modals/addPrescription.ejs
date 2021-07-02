@@ -79,7 +79,7 @@
         <button onclick="loadDetailModal(${data.ID_DONTHUOC})" type="button" class="btn btn-sm btn-success">Chi tiết</button>
         <button type="button" class="btn btn-sm btn-danger">Xóa</button>
         </div>
-      </div><small>Mã nhân viên phụ trách: ${data.NVPT || ''}</small>
+      </div><small>Mã nhân viên phụ trách: ${data.NGUOILAP || ''}</small>
     </div>`
   }
   const getPrescriptions = id => {
@@ -112,7 +112,7 @@
     const recordId = $('#addPrescriptionModal #recordId').val();
     const dataToPost = {
       ID_KHAMBENH: +recordId,
-      NVPT: $('#addPrescriptionModal #selectDealerEm').val(),
+      NGUOILAP: $('#addPrescriptionModal #selectDealerEm').val(),
     }
     const jsonToPost = JSON.stringify(dataToPost);
     $.ajax({

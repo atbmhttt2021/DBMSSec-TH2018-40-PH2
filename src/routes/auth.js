@@ -14,7 +14,6 @@ router.get('/login', withNoAuth, function (req, res) {
 
 // Login action
 router.post('/login', (req, res, next) => passport.authenticate('local', (error, user, info) => {
-  console.log(' post(/login user :>> ', user);
   if (error) {
     return res.status(500).json(error);
   }
@@ -25,7 +24,8 @@ router.post('/login', (req, res, next) => passport.authenticate('local', (error,
     if (err) {
       return next(err);
     }
-    // 
+    console.log('login user :>> ', user);
+    
     const model = timekeeperModel(user)
     await model.checkIn(user.username);
     return res.status(200).json({ status: 'OK' });

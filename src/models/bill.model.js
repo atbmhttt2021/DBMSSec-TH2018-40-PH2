@@ -1,6 +1,5 @@
 const moment = require('moment');
 const conn = require('../utils/db');
-const { schema } = require('../utils/config');
 
 module.exports = credenticals => {
   const db = conn(credenticals);
@@ -8,12 +7,11 @@ module.exports = credenticals => {
   return {
 
     all() {
-      return db('HOADON').withSchema(schema);
+      return db('HOADON');
     },
 
     async single(id) {
       const bills = await db('HOADON')
-        .withSchema(schema)
         .join('NHANVIEN', 'NHANVIEN.ID_NHANVIEN', '=', 'HOADON.NGUOIPT')
         .where('ID_HOADON', id)
         .select('HOADON.*', 'NHANVIEN.TENNV');
@@ -27,7 +25,6 @@ module.exports = credenticals => {
     add(bill) {
       const today = moment(new Date()).format('YYYY-MM-DD');
       return db('HOADON')
-        .withSchema(schema)
         .insert({
           ...bill,
           NGAYHD: db.raw(`TO_DATE('${today}', 'yyyy/mm/dd')`)
@@ -37,14 +34,12 @@ module.exports = credenticals => {
 
     update(id, bill) {
       return db('HOADON')
-        .withSchema(schema)
         .where('ID_HOADON', id)
         .update(bill);
     },
 
     delete(id) {
       return db('HOADON')
-        .withSchema(schema)
         .where('ID_HOADON', id)
         .del();
     },

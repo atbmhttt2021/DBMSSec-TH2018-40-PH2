@@ -1,17 +1,15 @@
 const conn = require('../utils/db');
-const { schema } = require('../utils/config');
 
 module.exports = credenticals => {
   const db = conn(credenticals);
   return {
 
     all() {
-      return db('BENHNHAN').withSchema(schema);
+      return db('BENHNHAN');
     },
 
     async single(id) {
       const patients = await db('BENHNHAN')
-        .withSchema(schema)
         .where('ID_BENHNHAN', id);
       if (patients.length === 0) {
         return null;
@@ -21,7 +19,6 @@ module.exports = credenticals => {
 
     async add(patient) {
       const ids = await db('BENHNHAN')
-        .withSchema(schema)
         .insert({
           ...patient,
           NGAYSINH: db.raw(`TO_DATE('${patient.NGAYSINH}', 'yyyy/mm/dd')`)
@@ -37,7 +34,6 @@ module.exports = credenticals => {
       console.log('id :>> ', id);
       console.log('patient :>> ', patient);
       return db('BENHNHAN')
-        .withSchema(schema)
         .where('ID_BENHNHAN', id)
         .update({
           ...patient,
@@ -47,7 +43,7 @@ module.exports = credenticals => {
 
     delete(id) {
       return db('BENHNHAN')
-        .withSchema(schema).where('ID_BENHNHAN', id).del();
+        .where('ID_BENHNHAN', id).del();
     },
   }
 };

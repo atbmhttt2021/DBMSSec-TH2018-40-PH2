@@ -1,5 +1,4 @@
 const conn = require('../utils/db');
-const { schema } = require('../utils/config');
 
 module.exports = credenticals => {
   const db = conn(credenticals);
@@ -9,14 +8,12 @@ module.exports = credenticals => {
     all() {
       return db('NHANVIEN')
       .join('DONVI', 'DONVI.ID_DONVI', '=', 'NHANVIEN.DONVI')
-      .select('NHANVIEN.*', 'DONVI.TENDV')
-      .withSchema(schema);
+      .select('NHANVIEN.*', 'DONVI.TENDV');
     },
 
     async single(id) {
       const employees = await db('NHANVIEN')
         .join('DONVI', 'DONVI.ID_DONVI', '=', 'NHANVIEN.DONVI')
-        .withSchema(schema)
         .select('NHANVIEN.*', 'DONVI.TENDV')
         .where('ID_NHANVIEN', id);
       if (employees.length === 0) {
@@ -28,7 +25,6 @@ module.exports = credenticals => {
 
     add(employee) {
       return db('NHANVIEN')
-        .withSchema(schema)
         .insert({
           ...employee,
           NGAYSINH: db.raw(`TO_DATE('${employee.NGAYSINH}', 'yyyy/mm/dd')`)
@@ -37,7 +33,6 @@ module.exports = credenticals => {
 
     update(id, employee) {
       return db('NHANVIEN')
-        .withSchema(schema)
         .where('ID_NHANVIEN', id)
         .update({
           ...employee,
@@ -47,7 +42,6 @@ module.exports = credenticals => {
 
     delete(id) {
       return db('NHANVIEN')
-        .withSchema(schema)
         .where('ID_NHANVIEN', id)
         .del();
     },
@@ -56,21 +50,18 @@ module.exports = credenticals => {
       return db('NHANVIEN')
       .join('DONVI', 'DONVI.ID_DONVI', '=', 'NHANVIEN.DONVI')
       .select('NHANVIEN.ID_NHANVIEN', 'NHANVIEN.TENNV')
-      .withSchema(schema)
       .where('DONVI.TENDV', 'like', 'Khoa%');
     },
     salemen() {
       return db('NHANVIEN')
       .join('DONVI', 'DONVI.ID_DONVI', '=', 'NHANVIEN.DONVI')
       .select('NHANVIEN.ID_NHANVIEN', 'NHANVIEN.TENNV')
-      .withSchema(schema)
       .where('DONVI.TENDV', 'like', '%bán thuốc%');
     },
     cashiers() {
       return db('NHANVIEN')
       .join('DONVI', 'DONVI.ID_DONVI', '=', 'NHANVIEN.DONVI')
       .select('NHANVIEN.ID_NHANVIEN', 'NHANVIEN.TENNV')
-      .withSchema(schema)
       .where('DONVI.TENDV', 'like', '%tài vụ%');
     },
   }
