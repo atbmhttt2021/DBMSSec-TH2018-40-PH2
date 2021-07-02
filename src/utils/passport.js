@@ -7,6 +7,7 @@ module.exports = _ => {
   passport.use(new localStrategy(
     (username, password, done) => {
       (async _ => {
+        
         try {
           const db = conn({ username, password });
           await db.raw('SELECT 1 FROM DUAL');

@@ -18,8 +18,6 @@ module.exports = credenticals => {
 
     async single(id) {
       const prescriptions = await db('DONTHUOC')
-
-        .withSchema(schema)
         .join('NHANVIEN', 'NHANVIEN.ID_NHANVIEN', '=', 'DONTHUOC.NGUOILAP')
         .select('DONTHUOC.*', 'NHANVIEN.TENNV')
         .where('DONTHUOC.ID_DONTHUOC', id);
