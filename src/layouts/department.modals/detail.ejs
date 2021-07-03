@@ -20,6 +20,12 @@
             <input type="text" class="form-control" id="inputName" required>
           </div>
         </div>
+        <div class="form-group row">
+          <label for="inputRole" class="col-sm-3 col-form-label">Vai trò*</label>
+          <div class="col-sm-9">
+            <input type="text" class="form-control" id="inputRole" required>
+          </div>
+        </div>
       </div>
 
       <div class="modal-footer py-1">
@@ -45,12 +51,13 @@
         if (data) {
           $('#inputId').val(data.ID_DONVI);
           $('#inputName').val(data.TENDV);
+          $('#inputRole').val(data.VAITRO);
         }
       }).fail(function (error) {
         console.log('error', error)
         Swal.fire({
           title: 'Lỗi!',
-          text: "Lỗi thông tin phòng ban",
+          text: "Lỗi hoặc Không đủ quyền xem thông tin phòng ban",
           icon: 'error',
           confirmButtonText: 'Cool'
         })
@@ -71,7 +78,8 @@
     e.preventDefault();
     const id = $('#selectedVal').text();
     const dataToPost = {
-      TENDV: $('#detailModal #inputName').val()
+      TENDV: $('#detailModal #inputName').val(),
+      VAITRO: $('#detailModal #inputRole').val()
     }
     const jsonToPost = JSON.stringify(dataToPost);
     $.ajax({
@@ -92,7 +100,7 @@
       console.log('error', error)
       Swal.fire({
         title: 'Lỗi!',
-        text: "Lỗi lưu thông tin phòng ban",
+        text: "Lỗi hoặc Không đủ quyền lưu thông tin phòng ban",
         icon: 'error',
         confirmButtonText: 'Cool'
       })

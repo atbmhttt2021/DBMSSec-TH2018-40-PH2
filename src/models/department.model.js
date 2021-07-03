@@ -19,15 +19,19 @@ module.exports = credenticals => {
       return departments[0];
     },
 
-    add(department) {
-      return db('DONVI')
+    async add(department) {
+      await db('DONVI')
         .insert(department);
+      const { VAITRO } = department;
+      return await db.raw(`BEGIN create_role('${VAITRO}'); END;`);
     },
 
-    update(id, department) {
-      return db('DONVI')
+    async update(id, department) {
+      await db('DONVI')
         .where('ID_DONVI', id)
         .update(department);
+      const { VAITRO } = department;
+      return await db.raw(`BEGIN create_role('${VAITRO}'); END;`);
     },
 
     delete(id) {

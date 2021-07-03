@@ -1,0 +1,118 @@
+<!-- Modal grant/revoke update price -->
+<!-- Modal Add or update -->
+<form class="modal fade" id="grantUpdatePriceModal">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header py-2">
+        <h6 class="modal-title">Cấp quyền sửa đơn giá dịch vụ</h6>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+
+
+        <div id="allowUpdateField" class="form-group row">
+          <label for="inputAllowUpdateLabel" class="col-sm-3 col-form-label">Cho phép</label>
+          <div class="col-sm-9">
+            <div class="custom-control custom-switch pt-2">
+              <input type="checkbox" class="custom-control-input" id="inputAllowUpdate" onchange="onChangeAllowUpdate(event)">
+              <label class="custom-control-label" for="inputAllowUpdate">On/Off</label>
+            </div>
+          </div>
+        </div>
+        <div id="invalidUser">
+          Chỉ có thể cấp quyền cho Nhân viên tài vụ
+        </div>
+
+      </div>
+
+      <div class="modal-footer py-1">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+      </div>
+
+    </div>
+  </div>
+</form>
+
+<script>
+
+  // Get info
+  $('#grantUpdatePriceModal').on('show.bs.modal', function (event) {
+    $('#allowLoginField').hide();
+    const id = $('#selectedVal').text();
+    if (id) {
+      $.ajax({
+        url: `/privileges/has-update-service-price-role/${+id}`,
+        type: 'GET',
+        dataType: 'json',
+        contentType: 'application/json'
+      }).done(function (data) {
+        if (data) {
+          const { isTaiVu, hasRole } = data;
+          if (typeof isTaiVu === "boolean") {
+            if (isTaiVu) {
+              $('#invalidUser').hide();
+              $('#allowUpdateField').show();
+              if (typeof hasRole === "boolean") {
+                $("#inputAllowUpdate").prop("checked", hasRole);
+                $('label[for=inputAllowUpdate]').text(hasRole ? 'On' : 'Off');
+              }
+            } else {
+              $('#invalidUser').show();
+              $('#allowUpdateField').hide();
+            }
+          }
+        }
+      }).fail(function (error) {
+        console.log('error', error)
+        Swal.fire({
+          title: 'Lỗi!',
+          text: "Lỗi hoặc Không đủ quyền xem thông tin phân quyền",
+          icon: 'error',
+          confirmButtonText: 'Cool'
+        })
+      });
+    }
+  });
+
+  $('#grantUpdatePriceModal').on('hidden.bs.modal', function (event) {
+    document.getElementById('grantUpdatePriceModal').reset();
+  });
+
+  function onChangeAllowUpdate(e) {
+    const isAllow = e.target.checked;
+    const id = $('#selectedVal').text();
+    if (id) {
+      const dataToPost = {
+        id,
+        allow: isAllow, 
+      }
+      const jsonToPost = JSON.stringify(dataToPost);
+      $.ajax({
+        url: '/privileges/update-service-price',
+        type: 'PUT',
+        dataType: 'json',
+        data: jsonToPost,
+        contentType: 'application/json'
+      }).done(function (data) {
+        Swal.fire({
+          title: 'Đã lưu!',
+          icon: 'success',
+          confirmButtonText: 'Ok'
+        }).then((result) => {
+          $('label[for=inputAllowUpdate]').text(isAllow ? 'On' : 'Off')
+        })
+      }).fail(function (error) {
+        console.log('error', error)
+        Swal.fire({
+          title: 'Lỗi!',
+          text: `Lỗi / Không đủ quyền cho phép cập nhật đơn giá dịch vụ`,
+          icon: 'error',
+          confirmButtonText: 'Cool'
+        })
+        $("#inputAllowUpdate").prop("checked", !isAllow);
+        $('label[for=inputAllowUpdate]').text(isAllow ? 'Off' : 'On')
+      });
+    }
+  }
+</script>

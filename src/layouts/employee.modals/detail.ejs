@@ -1,6 +1,6 @@
 <!-- Modal Add or update -->
 <form class="modal fade" id="detailModal">
-  <div class="modal-dialog modal-md">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header py-2">
         <h6 class="modal-title">Thông tin nhân viên</h6>
@@ -8,6 +8,17 @@
       </div>
 
       <div class="modal-body">
+
+
+        <div id="allowLoginField" class="form-group row">
+          <label for="inputAllowForm" class="col-sm-3 col-form-label">Cho phép đăng nhập</label>
+          <div id="inputAllowForm" class="col-sm-9">
+            <div class="custom-control custom-switch pt-2">
+              <input type="checkbox" class="custom-control-input" id="inputAllow" onchange="onChangeAllow(event)">
+              <label class="custom-control-label" for="inputAllow">On/Off</label>
+            </div>
+          </div>
+        </div>
         <div class="form-group row">
           <label for="inputId" class="col-sm-3 col-form-label">Mã nhân viên*</label>
           <div class="col-sm-9">
@@ -49,16 +60,51 @@
             <input type="date" class="form-control" id="inputBirth" required>
           </div>
         </div>
-        <div class="form-group row">
-          <label for="inputSalary" class="col-sm-3 col-form-label">Lương cứng*</label>
-          <div class="col-sm-9">
-            <input type="number" class="form-control" id="inputSalary" required>
+
+        <div id="allowUpdateSalaryField" class="form-group row">
+          <label for="inputAllowUpdateSalaryLabel" class="col-sm-3 col-form-label">Cập nhật lương?</label>
+          <div id="inputAllowUpdateSalaryLabel" class="col-sm-9">
+            <div class="custom-control custom-switch pt-2">
+              <input type="checkbox" class="custom-control-input" id="inputAllowUpdateSalary"
+                onchange="onChangeUpdateSalary(event)">
+              <label class="custom-control-label" for="inputAllowUpdateSalary">Có/Không</label>
+            </div>
           </div>
         </div>
+        <div id="updateSalaryField" class="form-group row">
+          <label for="inputSalary" class="col-sm-3 col-form-label">Lương theo ca*</label>
+          <div class="col-sm-9">
+            <input type="text" class="form-control" id="inputSalary" required>
+          </div>
+        </div>
+
+        <div id="allowUpdateSubSalaryField" class="form-group row">
+          <label for="inputAllowUpdateSubSalaryLabel" class="col-sm-3 col-form-label">Cập nhật phụ cấp?</label>
+          <div id="inputAllowUpdateSubSalaryLabel" class="col-sm-9">
+            <div class="custom-control custom-switch pt-2">
+              <input type="checkbox" class="custom-control-input" id="inputAllowUpdateSubSalary"
+                onchange="onChangeUpdateSubSalary(event)">
+              <label class="custom-control-label" for="inputAllowUpdateSubSalary">Có/Không</label>
+            </div>
+          </div>
+        </div>
+        <div id="updateSubSalaryField" class="form-group row">
+          <label for="inputSubSalary" class="col-sm-3 col-form-label">Phụ cấp mỗi tháng*</label>
+          <div class="col-sm-9">
+            <input type="text" class="form-control" id="inputSubSalary" required>
+          </div>
+        </div>
+
         <div class="form-group row">
-          <label for="inputUser" class="col-sm-3 col-form-label">Vai trò*</label>
+          <label for="inputUser" class="col-sm-3 col-form-label">Vai trò (Username)*</label>
           <div class="col-sm-9">
             <input type="text" class="form-control" id="inputUser" required>
+          </div>
+        </div>
+        <div id="pwField" class="form-group row">
+          <label for="inputPw" class="col-sm-3 col-form-label">Mật khẩu*</label>
+          <div class="col-sm-9">
+            <input type="password" class="form-control" id="inputPw" required>
           </div>
         </div>
         <div class="form-group row">
@@ -98,6 +144,7 @@
 
   // Get detail
   $('#detailModal').on('show.bs.modal', function (event) {
+    $('#allowLoginField').hide();
     const id = $('#selectedVal').text();
     if (id) {
       $.ajax({
@@ -107,6 +154,13 @@
         contentType: 'application/json'
       }).done(function (data) {
         if (data) {
+          if (!data.IS_MANAGER) {
+            $('#allowLoginField').show();
+            $("#inputAllow").prop("checked", data.ALLOW_LOGIN);
+            $('label[for=inputAllow]').text(data.ALLOW_LOGIN ? 'On' : 'Off');
+            $("#inputPw").prop("required", false);
+          }
+
           $('#inputId').val(data.ID_NHANVIEN);
           $('#inputName').val(data.TENNV);
           $('#inputPhone').val(data.SDT);
@@ -114,15 +168,22 @@
           $('#inputGender').val(data.GIOITINH);
           $('#inputBirth').val(new Date(data.NGAYSINH).toLocaleDateString('en-CA'));
           $('#inputSalary').val(data.LUONG);
+          $('#inputSubSalary').val(data.PHUCAP);
           $('#inputUser').val(data.VAITRO);
           const option = new Option(data.TENDV, data.DONVI, true, true);
           $("#inputDepartment").append(option).trigger('change');
         }
+        $('#pwField').hide();
+        $("#inputPw").prop("required", false);
+        $('#updateSalaryField').hide();
+        $('#allowUpdateSalaryField').show();
+        $('#updateSubSalaryField').hide();
+        $('#allowUpdateSubSalaryField').show();
       }).fail(function (error) {
         console.log('error', error)
         Swal.fire({
           title: 'Lỗi!',
-          text: "Lỗi thông tin nhân viên",
+          text: "Lỗi hoặc Không đủ quyền xem thông tin nhân viên",
           icon: 'error',
           confirmButtonText: 'Cool'
         })
@@ -131,27 +192,43 @@
     if (!id) {
       $('#inputId').hide();
       $('label[for=inputId]').hide();
+      $('#pwField').show();
+      $("#inputPw").prop("required", true);
+      $('#updateSalaryField').show();
+      $('#allowUpdateSalaryField').hide();
+      $('#updateSubSalaryField').show();
+      $('#allowUpdateSubSalaryField').hide();
     }
 
   });
 
   $('#detailModal').on('hidden.bs.modal', function (event) {
     document.getElementById('detailModal').reset();
+    $("#inputDepartment").empty().trigger('change');
   });
 
   // Add or udate
   $("#detailModal").submit(function (e) {
     e.preventDefault();
     const id = $('#selectedVal').text();
+    const allowUpdateSalary = $('#inputAllowUpdateSubSalary')[0].checked;
     const dataToPost = {
       TENNV: $('#detailModal #inputName').val(),
       SDT: $('#detailModal #inputPhone').val(),
       DIACHI: $('#detailModal #inputAddress').val(),
       GIOITINH: $('#detailModal #inputGender').val(),
       NGAYSINH: $('#detailModal #inputBirth').val(),
-      LUONG: $('#detailModal #inputSalary').val(),
-      VAITRO: $('#detailModal #inputUser').val(),
+      VAITRO: $('#detailModal #inputUser').val().toUpperCase(),
       DONVI: $('#detailModal #inputDepartment').val()
+    }
+    if (!id) {
+      dataToPost.PASSWORD = $('#detailModal #inputPw').val()
+    }
+    if (!id || allowUpdateSalary) {
+      dataToPost.LUONG = $('#detailModal #inputSalary').val()
+    }
+    if (!id || allowUpdateSalary) {
+      dataToPost.PHUCAP = $('#detailModal #inputSubSalary').val()
     }
     const jsonToPost = JSON.stringify(dataToPost);
     $.ajax({
@@ -166,16 +243,95 @@
         icon: 'success',
         confirmButtonText: 'Ok'
       }).then((result) => {
+        const isAllowLogin = $("#inputAllow")[0].checked;
+        const VAITRO = $('#detailModal #inputUser').val().toUpperCase();
+        if (!id && isAllowLogin) {
+          toggleAllowLogin(VAITRO, isAllowLogin);
+        }
+        else {
+          window.location.reload();
+        }
+      })
+    }).fail(function (error) {
+      console.log('error', error)
+      Swal.fire({
+        title: 'Lỗi!',
+        text: "Lỗi hoặc Không đủ quyền lưu thông tin nhân viên",
+        icon: 'error',
+        confirmButtonText: 'Cool'
+      })
+    });
+  });
+
+  function toggleAllowLogin(VAITRO, isAllow) {
+    const dataToPost = {
+      VAITRO,
+      allow: isAllow,
+    }
+    const jsonToPost = JSON.stringify(dataToPost);
+    $.ajax({
+      url: '/privileges/login',
+      type: 'PUT',
+      dataType: 'json',
+      data: jsonToPost,
+      contentType: 'application/json'
+    }).done(function (data) {
+      Swal.fire({
+        title: 'Đã lưu!',
+        icon: 'success',
+        confirmButtonText: 'Ok'
+      }).then((result) => {
+        $('label[for=inputAllow]').text(isAllow ? 'On' : 'Off')
         window.location.reload();
       })
     }).fail(function (error) {
       console.log('error', error)
       Swal.fire({
         title: 'Lỗi!',
-        text: "Lỗi lưu thông tin nhân viên",
+        text: `Lỗi ${isAllow ? 'Bật' : 'Tắt'} cho phép đăng nhập`,
         icon: 'error',
         confirmButtonText: 'Cool'
       })
+      $("#inputAllow").prop("checked", !isAllow);
+      $('label[for=inputAllow]').text(isAllow ? 'Off' : 'On')
     });
-  });
+  }
+
+  function onChangeAllow(e) {
+    const checked = e.target.checked;
+    const VAITRO = $('#detailModal #inputUser').val();
+    const id = $('#selectedVal').text();
+
+    if (id) {
+      return toggleAllowLogin(VAITRO, checked);
+      console.log('có id');
+    }
+  }
+
+
+  function onChangeUpdateSalary(e) {
+    const checked = e.target.checked;
+    const id = $('#selectedVal').text();
+    if (id) {
+      if (checked) {
+        $('#updateSalaryField').show();
+      }
+      else {
+        $('#updateSalaryField').hide();
+      }
+    }
+  }
+
+function onChangeUpdateSubSalary(e) {
+  const checked = e.target.checked;
+  const id = $('#selectedVal').text();
+  if (id) {
+    if (checked) {
+      $('#updateSubSalaryField').show();
+    }
+    else {
+      $('#updateSubSalaryField').hide();
+    }
+  }
+}
 </script>

@@ -4,6 +4,7 @@
     <div class="modal-content">
       <div class="modal-header py-2">
         <h6 class="modal-title">Thông tin thuốc</h6>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
       </div>
 
       <div class="modal-body">
@@ -83,7 +84,7 @@
         console.log('error', error)
         Swal.fire({
           title: 'Lỗi!',
-          text: "Lỗi thông tin thuốc",
+          text: "Lỗi hoặc Không đủ quyền xem thông tin thuốc",
           icon: 'error',
           confirmButtonText: 'Cool'
         })
@@ -130,7 +131,7 @@
       console.log('error', error)
       Swal.fire({
         title: 'Lỗi!',
-        text: "Lỗi lưu thông tin thuốc",
+        text: "Lỗi hoặc Không đủ quyền lưu thông tin thuốc",
         icon: 'error',
         confirmButtonText: 'Cool'
       })

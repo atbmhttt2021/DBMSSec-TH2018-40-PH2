@@ -20,7 +20,7 @@ module.exports = credenticals => {
       if (!ID_NHANVIEN) return null;
 
       // Count existing Check in to day
-      const existCheckinCounter = await db('SYS.CHAMCONG')
+      const existCheckinCounter = await db('CHAMCONG')
         .where('ID_NHANVIEN', ID_NHANVIEN)
         .whereRaw('trunc(THOIGIAN) = trunc(CURRENT_TIMESTAMP)')
         .count('*', { as: 'COUNT' });

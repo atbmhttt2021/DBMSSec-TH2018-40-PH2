@@ -4,8 +4,6 @@ const departmentModel = require('../models/department.model');
 
 // Load page
 router.get('/', async function (req, res) {
-  console.log('req.user :>> ', req.user);
-  console.log('req.session :>> ', req.session);
   const data = {
     user: req.user,
     path: 'departments',

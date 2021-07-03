@@ -12,6 +12,7 @@ router.get('/', async function (req, res) {
   try {
     const model = medicalRecordModel(req.session.passport.user)
     data.list = await model.all();
+    console.log('data.list  :>> ', data.list );
   } catch (error) {
     console.log(error);
     data.error = {

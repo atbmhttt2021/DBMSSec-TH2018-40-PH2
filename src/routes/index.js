@@ -14,6 +14,7 @@ const prescriptionRoutes = require('./prescriptions');
 const billsRoutes = require('./bills');
 const medicineDetailRoutes = require('./medicine-detail');
 const billDetailRoutes = require('./bill-detail');
+const privilegeRoutes = require('./privileges');
 
 const { withAuth } = require('../middlewares/withAuth');
 
@@ -31,6 +32,7 @@ router
   .use('/bills', withAuth, billsRoutes)
   .use('/medicine-details', withAuth, medicineDetailRoutes)
   .use('/bill-details', withAuth, billDetailRoutes)
+  .use('/privileges', withAuth, privilegeRoutes)
 
   .get('/', function (req, res) {
     res.redirect('/employees');

@@ -4,6 +4,7 @@ const path = require('path');
 const session = require('express-session');
 const passport = require('passport');
 require('express-async-errors');
+require('dotenv').config()
 const routes = require('./routes/index');
 const passportConfig = require('./utils/passport')
 

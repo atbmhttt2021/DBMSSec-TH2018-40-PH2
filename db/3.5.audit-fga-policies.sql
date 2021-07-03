@@ -1,4 +1,3 @@
-
 ------------------------------------------------------------------
 --- Dang nhap voi quyen SYS trong SQL Plus
 --- Chay cac lenh sau:

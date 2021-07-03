@@ -24,7 +24,7 @@ create or replace package body context_package is
     begin
       select ID_NHANVIEN
       into v_id
-      from benhvien.NHANVIEN
+      from NHANVIEN
       where VAITRO=v_user;
 
       DBMS_session.set_context(schema_owner,'user_id',v_id);
@@ -43,7 +43,7 @@ create or replace public synonym context_package for context_package;
 grant execute on context_package to public;
 /
 
---set context CONNECT sys/password@service AS SYSDBA;
+--set context
 create or replace trigger set_security_context
 after logon on database
 begin

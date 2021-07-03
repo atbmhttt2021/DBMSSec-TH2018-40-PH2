@@ -4,6 +4,7 @@
     <div class="modal-content">
       <div class="modal-header py-2">
         <h6 class="modal-title">Thông tin dịch vụ</h6>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
       </div>
 
       <div class="modal-body">
@@ -29,7 +30,8 @@
 
 
       <div class="modal-footer py-1">
-        <button type="submit" class="btn btn-success">Lưu</button>
+        <button id="updateOnlyPriceBtn" type="button" class="btn btn-success"">Chỉ cập nhật đơn giá</button>
+        <button type="submit" class="btn btn-success">Lưu tất cả</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
       </div>
 
@@ -52,12 +54,13 @@
           $('#inputId').val(data.ID_DICHVU);
           $('#inputName').val(data.TENDV);
           $('#inputPrice').val(data.DONGIA);
+          $('#updateOnlyPriceBtn').show();
         }
       }).fail(function (error) {
         console.log('error', error)
         Swal.fire({
           title: 'Lỗi!',
-          text: "Lỗi thông tin dịch vụ",
+          text: "Lỗi hoặc Không đủ quyền xem thông tin dịch vụ",
           icon: 'error',
           confirmButtonText: 'Cool'
         })
@@ -66,6 +69,7 @@
     if (!id) {
       $('#inputId').hide();
       $('label[for=inputId]').hide();
+      $('#updateOnlyPriceBtn').hide();
     }
   });
 
@@ -100,7 +104,39 @@
       console.log('error', error)
       Swal.fire({
         title: 'Lỗi!',
-        text: "Lỗi lưu thông tin dịch vụ",
+        text: "Lỗi hoặc Không đủ quyền lưu thông tin dịch vụ",
+        icon: 'error',
+        confirmButtonText: 'Cool'
+      })
+    });
+  });
+
+    // Update only price
+  $('#updateOnlyPriceBtn').on('click', function (event) {
+    const id = $('#selectedVal').text();
+    const dataToPost = {
+      DONGIA: $('#detailModal #inputPrice').val()
+    }
+    const jsonToPost = JSON.stringify(dataToPost);
+    $.ajax({
+      url: `/services/${id ? +id : ''}`,
+      type: 'PUT',
+      dataType: 'json',
+      data: jsonToPost,
+      contentType: 'application/json'
+    }).done(function (data) {
+      Swal.fire({
+        title: 'Hoàn thành!',
+        icon: 'success',
+        confirmButtonText: 'Ok'
+      }).then((result) => {
+        window.location.reload();
+      })
+    }).fail(function (error) {
+      console.log('error', error)
+      Swal.fire({
+        title: 'Lỗi!',
+        text: "Lỗi hoặc Không đủ quyền lưu đơn giá dịch vụ",
         icon: 'error',
         confirmButtonText: 'Cool'
       })

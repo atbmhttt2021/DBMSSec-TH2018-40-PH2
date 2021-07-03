@@ -6,6 +6,7 @@ AUTHID CURRENT_USER
 IS
 PRAGMA AUTONOMOUS_TRANSACTION;
 BEGIN
+  EXECUTE IMMEDIATE 'ALTER SESSION set "_ORACLE_SCRIPT"=true';
   EXECUTE IMMEDIATE 'CREATE ROLE ' || role_name;
 EXCEPTION
   WHEN OTHERS THEN
@@ -20,6 +21,7 @@ END create_role;
 CREATE OR REPLACE PROCEDURE create_user(
 	pi_username IN VARCHAR2,
 	pi_password IN VARCHAR2  )
+AUTHID CURRENT_USER
 IS
 	user_name VARCHAR2(50)  	:= pi_username;
 	pwd VARCHAR2(50) 		:= pi_password;
@@ -31,6 +33,9 @@ BEGIN
     FROM dba_users
   WHERE username = UPPER ( user_name );
 
+  lv_stmt := 'ALTER SESSION set "_ORACLE_SCRIPT"=true';
+  EXECUTE IMMEDIATE ( lv_stmt );
+  
   IF li_count = 0
   THEN
   lv_stmt := 'CREATE USER ' || user_name || ' IDENTIFIED BY ' || pwd;
@@ -57,6 +62,7 @@ BEGIN
   EXECUTE IMMEDIATE 'GRANT SELECT ON HOADON TO ' || role_name;
   EXECUTE IMMEDIATE 'GRANT SELECT ON CTHOADON TO ' || role_name;
   EXECUTE IMMEDIATE 'GRANT SELECT ON CHAMCONG TO ' || role_name;
+	EXECUTE IMMEDIATE 'GRANT SELECT ON dba_role_privs TO ' || role_name;
 COMMIT;
 END grant_quanly_privs;
 /
@@ -68,9 +74,14 @@ BEGIN
 	EXECUTE IMMEDIATE 'GRANT INSERT, UPDATE, DELETE ON DONVI TO ' || role_name;
 	EXECUTE IMMEDIATE 'GRANT INSERT, UPDATE, DELETE ON NHANVIEN TO ' || role_name;
 	EXECUTE IMMEDIATE 'GRANT INSERT, UPDATE, DELETE ON CHAMCONG TO ' || role_name;
+	EXECUTE IMMEDIATE 'GRANT SELECT ON LUONGTHANG TO ' || role_name;
 	EXECUTE IMMEDIATE 'GRANT EXECUTE ON create_role TO ' || role_name;
 	EXECUTE IMMEDIATE 'GRANT EXECUTE ON create_user TO ' || role_name;
-	EXECUTE IMMEDIATE 'GRANT SELECT ON LUONGTHANG TO ' || role_name;
+	EXECUTE IMMEDIATE 'GRANT SELECT ON dba_users TO ' || role_name;
+	EXECUTE IMMEDIATE 'GRANT CREATE USER TO ' || role_name;
+	EXECUTE IMMEDIATE 'GRANT CREATE ROLE TO ' || role_name;
+	EXECUTE IMMEDIATE 'GRANT EXECUTE ON grant_role_to_role_or_user TO ' || role_name;
+	EXECUTE IMMEDIATE 'GRANT EXECUTE ON revoke_role TO ' || role_name;
 COMMIT;
 END grant_quanlytainguyen_privs;
 /
@@ -115,7 +126,7 @@ CREATE OR REPLACE PROCEDURE grant_taivu_privs( pi_rolename IN NVARCHAR2) IS
 	role_name NVARCHAR2(50) := pi_rolename;
 BEGIN
 	EXECUTE IMMEDIATE 'GRANT SELECT ON HOSOBENHNHAN TO ' || role_name; 
-	EXECUTE IMMEDIATE 'GRANT SELECT, UPDATE ON DICHVU TO ' || role_name; 
+	EXECUTE IMMEDIATE 'GRANT SELECT ON DICHVU TO ' || role_name; 
 	EXECUTE IMMEDIATE 'GRANT SELECT ON HOSO_DICHVU TO ' || role_name; 
 COMMIT;
 END grant_taivu_privs;
@@ -197,8 +208,17 @@ CREATE OR REPLACE PROCEDURE revoke_role( pi_rolename IN NVARCHAR2, pi_username I
 	user_name NVARCHAR2(50) := pi_username;
   lv_stmt   VARCHAR2 (1000);
 BEGIN
-  lv_stmt:='REVOKE ' || role_name || ' FROM ' || user_name || ';';
+  lv_stmt:='REVOKE ' || role_name || ' FROM ' || user_name;
 	EXECUTE IMMEDIATE ( lv_stmt ); 
 COMMIT;
+EXCEPTION
+  WHEN OTHERS THEN NULL;
 END revoke_role;
 /
+
+
+-- Create synonyms
+CREATE OR REPLACE PUBLIC SYNONYM create_role FOR create_role;
+CREATE OR REPLACE PUBLIC SYNONYM create_user FOR create_user;
+CREATE OR REPLACE PUBLIC SYNONYM grant_role_to_role_or_user FOR grant_role_to_role_or_user;
+CREATE OR REPLACE PUBLIC SYNONYM revoke_role FOR revoke_role;

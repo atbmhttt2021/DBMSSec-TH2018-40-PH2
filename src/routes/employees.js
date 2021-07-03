@@ -42,12 +42,20 @@ router.get('/cashiers', async function (req, res) {
   res.status(200).json(list);
 })
 
+
 // Get one
 router.get('/:id', async function (req, res) {
   const id = req.params.id;
   try {
     const model = employeeModel(req.session.passport.user)
-    info = await model.single(id);;
+    info = await model.single(id);
+    if (info) {
+      const isManager = await model.hasQuanLyRole(info.VAITRO);
+      info.IS_MANAGER = isManager;
+      if (!isManager) {
+        info.ALLOW_LOGIN = await model.hasAllowLoginRole(info.VAITRO);
+      }
+    }
     res.status(200).json(info)
   } catch (error) {
     console.log(error);
@@ -62,6 +70,7 @@ router.post('/', async function (req, res) {
     await model.add(req.body);
     res.status(200).json({ status: 'ok' })
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: 'Lỗi' })
   }
 })
@@ -75,6 +84,7 @@ router.put('/:id', async function (req, res) {
     await model.update(id, data);
     res.status(200).json({ status: 'ok' })
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: 'Lỗi' })
   }
 })
