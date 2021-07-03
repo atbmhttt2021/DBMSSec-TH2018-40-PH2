@@ -14,8 +14,12 @@
 
 * ### `npm install`
 
-### Edit ./src/utils/db.js as your local oracle config
+### Edit ./src/utils/db.js as your local oracle config (database field)
 
-### Run scripts in ./db/0.init_xxx, ./db/1.create_xxx, ./db/2.insert_xxx to initialize data
+### Run scripts in 
+* ./db/0.initialize via sys/oracle (sysdba)
+* ./db/1.xxxxx, ./db/2.xxxxx, etc. via benhvien/admin
+
+to initialize data
 
 * ### `npm start`
