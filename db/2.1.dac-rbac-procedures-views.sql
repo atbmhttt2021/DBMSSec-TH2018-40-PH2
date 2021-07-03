@@ -19,32 +19,36 @@ END create_role;
 
 --create procedure create user
 CREATE OR REPLACE PROCEDURE create_user(
-	pi_username IN VARCHAR2,
-	pi_password IN VARCHAR2  )
-AUTHID CURRENT_USER
-IS
-	user_name VARCHAR2(50)  	:= pi_username;
-	pwd VARCHAR2(50) 		:= pi_password;
-  li_count       INTEGER	:= 0;
-  lv_stmt   VARCHAR2 (1000);
+	pi_username IN NVARCHAR2,
+	pi_password IN NVARCHAR2) IS
+	
+	user_name NVARCHAR2(20)  	:= pi_username;
+	pwd NVARCHAR2(20) 		:= pi_password;
+   	li_count       INTEGER	:= 0;
+   	lv_stmt   VARCHAR2 (1000);
 BEGIN
-  SELECT COUNT (1)
-    INTO li_count
-    FROM dba_users
-  WHERE username = UPPER ( user_name );
+   	SELECT COUNT (1)
+     	INTO li_count
+     	FROM all_users
+   	WHERE username = UPPER ( user_name );
 
-  lv_stmt := 'ALTER SESSION set "_ORACLE_SCRIPT"=true';
-  EXECUTE IMMEDIATE ( lv_stmt );
-  
-  IF li_count = 0
-  THEN
-  lv_stmt := 'CREATE USER ' || user_name || ' IDENTIFIED BY ' || pwd;
-  EXECUTE IMMEDIATE ( lv_stmt );
-  END IF;
-                                                    
+   	IF li_count != 0
+   	THEN
+		lv_stmt := 'DROP USER '|| user_name || ' CASCADE';      	
+		EXECUTE IMMEDIATE ( lv_stmt );
+   	END IF;
+        lv_stmt := 'CREATE USER ' || user_name || ' IDENTIFIED BY ' || pwd ;
+	DBMS_OUTPUT.put_line(lv_stmt);
+
+	EXECUTE IMMEDIATE ( lv_stmt ); 
+                                                
+        -- ****** Object: Roles for user ******
+	lv_stmt := 'GRANT RESOURCE, CONNECT TO ' || user_name;
+
+	EXECUTE IMMEDIATE ( lv_stmt );
 	COMMIT;
 END create_user;
-/ 
+/
 
 --Procedure grant privileges to QUANLY role
 CREATE OR REPLACE PROCEDURE grant_quanly_privs( pi_rolename IN NVARCHAR2) IS

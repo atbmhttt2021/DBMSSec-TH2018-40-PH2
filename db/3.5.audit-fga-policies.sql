@@ -13,7 +13,7 @@ AUDIT CONNECT;
 ----1. Audit thuong
 /*audit policy 1: audit select on key_salary */
    
-AUDIT INSERT,DELETE,UPDATE,SELECT ANY TABLE BY ACCESS WHENEVER SUCCESSFUL;
+AUDIT INSERT,DELETE,UPDATE,SELECT on key_salary BY ACCESS WHENEVER SUCCESSFUL;
 /*audit policy 3: audit xoa bang trong database
 */
 AUDIT DELETE ANY TABLE WHENEVER NOT SUCCESSFUL;
@@ -28,12 +28,11 @@ select username, owner, obj_name, action_name, sql_text from dba_audit_trail;
 */
 BEGIN
   DBMS_FGA.ADD_POLICY(
-   object_schema      => 'SYS',
    object_name        => 'NHANVIEN',
    policy_name        => 'audit_salary',
    enable             =>  TRUE,
    statement_types    => 'INSERT, UPDATE, DELETE',
-   audit_column       => 'LUONGCA',
+   audit_column       => 'LUONG',
    audit_trail        =>  DBMS_FGA.DB + DBMS_FGA.EXTENDED);
 END;
 /
