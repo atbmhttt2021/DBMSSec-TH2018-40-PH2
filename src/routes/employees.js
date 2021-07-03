@@ -46,6 +46,7 @@ router.get('/cashiers', async function (req, res) {
 // Get one
 router.get('/:id', async function (req, res) {
   const id = req.params.id;
+  let info ={};
   try {
     const model = employeeModel(req.session.passport.user)
     info = await model.single(id);
@@ -59,7 +60,7 @@ router.get('/:id', async function (req, res) {
     res.status(200).json(info)
   } catch (error) {
     console.log(error);
-    res.status(403).json({ message: `Không có quyền xem nhân viên ${id}` })
+    res.status(200).json({ ...info, message: `Không đủ quyền xem nhân viên ${id}` })
   }
 })
 
@@ -79,6 +80,7 @@ router.post('/', async function (req, res) {
 router.put('/:id', async function (req, res) {
   const id = req.params.id;
   const data = req.body;
+  console.log('req.body :>> ', req.body);
   try {
     const model = employeeModel(req.session.passport.user)
     await model.update(id, data);

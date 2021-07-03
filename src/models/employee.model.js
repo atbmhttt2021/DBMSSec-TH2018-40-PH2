@@ -1,4 +1,5 @@
 const conn = require('../utils/db');
+const crypto = require('crypto-js');
 
 module.exports = credenticals => {
   const db = conn(credenticals);
@@ -19,8 +20,35 @@ module.exports = credenticals => {
       if (employees.length === 0) {
         return null;
       }
+      let result = employees[0];
 
-      return employees[0];
+      const secretKey = process.env.DB_SECRET_ENCRYPTION;
+      try {
+        const salary = await db.raw('select DECRYPTSALARY_FUNC() AS LUONGCA from dual');
+        if (salary[0] && salary[0].LUONGCA) {
+          const luongca = salary[0].LUONGCA;
+          const bytes = crypto.AES.decrypt(luongca, secretKey);
+          console.log('secretKey :>> ', secretKey);
+          console.log('luongca :>> ', luongca);
+          console.log('bytes :>> ', bytes);
+          result.LUONGCA = bytes.toString(crypto.enc.Utf8);
+          console.log('result.LUONGCA :>> ', result.LUONGCA);
+        }
+      } catch (error) {
+        console.log('error :>> ', error);
+      }
+      try {
+        const subSalary = await db.raw('select DECRYPTSUBSALARY_FUNC() AS PHUCAP from dual');
+        if (subSalary[0] && subSalary[0].PHUCAP) {
+          const phucap = subSalary[0].PHUCAP;
+          const bytes = crypto.AES.decrypt(phucap, secretKey);
+          result.PHUCAP = bytes.toString(crypto.enc.Utf8);
+          console.log('object :>> ', result.PHUCAP);
+        }
+      } catch (error) {
+        console.log('error :>> ', error);
+      }
+      return result;
     },
 
     async add(employee) {
@@ -30,6 +58,17 @@ module.exports = credenticals => {
           ...info,
           NGAYSINH: db.raw(`TO_DATE('${info.NGAYSINH}', 'yyyy/mm/dd')`)
         });
+
+      // Encrypt salary
+      const secretKey = process.env.DB_SECRET_ENCRYPTION;
+      if (employee.LUONGCA) {
+        const luongEncryped = crypto.AES.encrypt(employee.LUONGCA, secretKey).toString();
+        employee.LUONGCA = luongEncryped;
+      }
+      if (employee.PHUCAP) {
+        const phucapEncryped = crypto.AES.encrypt(employee.PHUCAP, secretKey).toString();
+        employee.PHUCAP = phucapEncryped;
+      }
 
       const { VAITRO, DONVI } = info;
       await db.raw(`BEGIN create_user('${VAITRO}', '${PASSWORD}'); END;`);
@@ -47,13 +86,23 @@ module.exports = credenticals => {
     async update(id, employee) {
       // get previous role
       const old = await db('NHANVIEN')
-      .join('DONVI', 'DONVI.ID_DONVI', '=', 'NHANVIEN.DONVI')
-      .select('DONVI.VAITRO')
-      .where('NHANVIEN.ID_NHANVIEN', id)
-      .first();
+        .join('DONVI', 'DONVI.ID_DONVI', '=', 'NHANVIEN.DONVI')
+        .select('DONVI.VAITRO')
+        .where('NHANVIEN.ID_NHANVIEN', id)
+        .first();
       const oldRole = old.VAITRO;
 
-      console.log('employee :>> ', employee);
+      // Encrypt salary
+      const secretKey = process.env.DB_SECRET_ENCRYPTION;
+      if (employee.LUONGCA) {
+        const luongEncryped = crypto.AES.encrypt(employee.LUONGCA, secretKey).toString();
+        employee.LUONGCA = luongEncryped;
+      }
+      if (employee.PHUCAP) {
+        const phucapEncryped = crypto.AES.encrypt(employee.PHUCAP, secretKey).toString();
+        employee.PHUCAP = phucapEncryped;
+      }
+
       // Update
       await db('NHANVIEN')
         .where('ID_NHANVIEN', id)
@@ -134,8 +183,8 @@ module.exports = credenticals => {
         .where('GRANTEE', user)
         .where('GRANTED_ROLE', 'NHANVIEN_TAIVU')
         .count('*', { as: 'COUNT' });
-        const { COUNT } = res[0];
-        return COUNT > 0;
+      const { COUNT } = res[0];
+      return COUNT > 0;
     },
     async hasUpdateServicePriceRole(user) {
       const res = await db('DBA_ROLE_PRIVS')

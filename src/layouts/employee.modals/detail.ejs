@@ -32,9 +32,9 @@
           </div>
         </div>
         <div class="form-group row">
-          <label for="inputPhone" class="col-sm-3 col-form-label">Số điện thoại*</label>
+          <label for="inputPhone" class="col-sm-3 col-form-label">Số điện thoại</label>
           <div class="col-sm-9">
-            <input type="tel" class="form-control" id="inputPhone" required>
+            <input type="tel" class="form-control" id="inputPhone">
           </div>
         </div>
         <div class="form-group row">
@@ -154,11 +154,11 @@
         contentType: 'application/json'
       }).done(function (data) {
         if (data) {
+          console.log('data :>> ', data);
           if (!data.IS_MANAGER) {
             $('#allowLoginField').show();
             $("#inputAllow").prop("checked", data.ALLOW_LOGIN);
             $('label[for=inputAllow]').text(data.ALLOW_LOGIN ? 'On' : 'Off');
-            $("#inputPw").prop("required", false);
           }
 
           $('#inputId').val(data.ID_NHANVIEN);
@@ -167,7 +167,7 @@
           $('#inputAddress').val(data.DIACHI);
           $('#inputGender').val(data.GIOITINH);
           $('#inputBirth').val(new Date(data.NGAYSINH).toLocaleDateString('en-CA'));
-          $('#inputSalary').val(data.LUONG);
+          $('#inputSalary').val(data.LUONGCA);
           $('#inputSubSalary').val(data.PHUCAP);
           $('#inputUser').val(data.VAITRO);
           const option = new Option(data.TENDV, data.DONVI, true, true);
@@ -179,6 +179,8 @@
         $('#allowUpdateSalaryField').show();
         $('#updateSubSalaryField').hide();
         $('#allowUpdateSubSalaryField').show();
+        $("#inputSalary").prop("required", false);
+        $("#inputSubSalary").prop("required", false);
       }).fail(function (error) {
         console.log('error', error)
         Swal.fire({
@@ -211,7 +213,8 @@
   $("#detailModal").submit(function (e) {
     e.preventDefault();
     const id = $('#selectedVal').text();
-    const allowUpdateSalary = $('#inputAllowUpdateSubSalary')[0].checked;
+    const allowUpdateSalary = $('#inputAllowUpdateSalary')[0].checked;
+    const allowUpdateSubSalary = $('#inputAllowUpdateSubSalary')[0].checked;
     const dataToPost = {
       TENNV: $('#detailModal #inputName').val(),
       SDT: $('#detailModal #inputPhone').val(),
@@ -225,9 +228,9 @@
       dataToPost.PASSWORD = $('#detailModal #inputPw').val()
     }
     if (!id || allowUpdateSalary) {
-      dataToPost.LUONG = $('#detailModal #inputSalary').val()
+      dataToPost.LUONGCA = $('#detailModal #inputSalary').val()
     }
-    if (!id || allowUpdateSalary) {
+    if (!id || allowUpdateSubSalary) {
       dataToPost.PHUCAP = $('#detailModal #inputSubSalary').val()
     }
     const jsonToPost = JSON.stringify(dataToPost);
@@ -288,7 +291,7 @@
       console.log('error', error)
       Swal.fire({
         title: 'Lỗi!',
-        text: `Lỗi ${isAllow ? 'Bật' : 'Tắt'} cho phép đăng nhập`,
+        text: `Lỗi không có quyền`,
         icon: 'error',
         confirmButtonText: 'Cool'
       })
@@ -304,7 +307,6 @@
 
     if (id) {
       return toggleAllowLogin(VAITRO, checked);
-      console.log('có id');
     }
   }
 
@@ -315,9 +317,11 @@
     if (id) {
       if (checked) {
         $('#updateSalaryField').show();
+        $("#inputSalary").prop("required", true);
       }
       else {
         $('#updateSalaryField').hide();
+        $("#inputSalary").prop("required", false);
       }
     }
   }
@@ -328,9 +332,11 @@ function onChangeUpdateSubSalary(e) {
   if (id) {
     if (checked) {
       $('#updateSubSalaryField').show();
+      $("#inputSubSalary").prop("required", true);
     }
     else {
       $('#updateSubSalaryField').hide();
+      $("#inputSubSalary").prop("required", false);
     }
   }
 }

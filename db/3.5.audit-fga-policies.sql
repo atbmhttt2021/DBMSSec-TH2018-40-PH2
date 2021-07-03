@@ -33,7 +33,7 @@ BEGIN
    policy_name        => 'audit_salary',
    enable             =>  TRUE,
    statement_types    => 'INSERT, UPDATE, DELETE',
-   audit_column       => 'LUONG',
+   audit_column       => 'LUONGCA',
    audit_trail        =>  DBMS_FGA.DB + DBMS_FGA.EXTENDED);
 END;
 /
