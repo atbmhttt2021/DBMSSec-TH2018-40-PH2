@@ -1,4 +1,4 @@
--- CONNECT benhvien/admin
+-- CONN BENHVIEN/ADMIN@//localhost:1521/pdb01.localdomain
 
 -- Create procedure create role
 CREATE OR REPLACE PROCEDURE create_role( role_name IN VARCHAR2 )
@@ -6,7 +6,6 @@ AUTHID CURRENT_USER
 IS
 PRAGMA AUTONOMOUS_TRANSACTION;
 BEGIN
-  EXECUTE IMMEDIATE 'ALTER SESSION set "_ORACLE_SCRIPT"=true';
   EXECUTE IMMEDIATE 'CREATE ROLE ' || role_name;
 EXCEPTION
   WHEN OTHERS THEN
@@ -33,9 +32,6 @@ BEGIN
     FROM dba_users
   WHERE username = UPPER ( user_name );
 
-  lv_stmt := 'ALTER SESSION set "_ORACLE_SCRIPT"=true';
-  EXECUTE IMMEDIATE ( lv_stmt );
-  
   IF li_count = 0
   THEN
   lv_stmt := 'CREATE USER ' || user_name || ' IDENTIFIED BY ' || pwd;
@@ -82,6 +78,7 @@ BEGIN
 	EXECUTE IMMEDIATE 'GRANT CREATE ROLE TO ' || role_name;
 	EXECUTE IMMEDIATE 'GRANT EXECUTE ON grant_role_to_role_or_user TO ' || role_name;
 	EXECUTE IMMEDIATE 'GRANT EXECUTE ON revoke_role TO ' || role_name;
+	EXECUTE IMMEDIATE 'GRANT INSERT, UPDATE ON THONGBAO TO ' || role_name;
 COMMIT;
 END grant_quanlytainguyen_privs;
 /

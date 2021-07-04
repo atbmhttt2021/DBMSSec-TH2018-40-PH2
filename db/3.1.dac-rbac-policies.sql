@@ -1,7 +1,4 @@
--- CONNECT benhvien/admin
-
--- oracle 12 fix create user issue
-ALTER SESSION set "_ORACLE_SCRIPT"=true;
+-- CONN BENHVIEN/ADMIN@//localhost:1521/pdb01.localdomain
 
 -- Drop roles and users
 BEGIN
@@ -123,7 +120,7 @@ EXECUTE create_user('BS02','BS02');
 
 
 
--------RBAC policy----------
+-------RBAC policies----------
 
 
 -- Execute grant privileges to roles
@@ -140,6 +137,9 @@ EXECUTE grant_bacsi_privs('BACSI_DIEUTRI');
 -- Execute grant role to roles
 -- Input: (soure name, dest name)
 EXECUTE grant_role_to_role_or_user('NHANVIEN_QUANLY', 'NHANVIEN_QUANLY_TAINGUYEN_NHANSU');
+EXECUTE grant_role_to_role_or_user('NHANVIEN_TIEPTAN_DIEUPHOI', 'NVTT01');
+EXECUTE grant_role_to_role_or_user('NHANVIEN_BANTHUOC', 'NVBT01');
+EXECUTE grant_role_to_role_or_user('NHANVIEN_TAIVU', 'NVTV01');
 EXECUTE grant_role_to_role_or_user('NHANVIEN_QUANLY', 'NHANVIEN_QUANLY_TAIVU');
 EXECUTE grant_role_to_role_or_user('NHANVIEN_QUANLY', 'NHANVIEN_QUANLY_CHUYENMON');
 
@@ -148,16 +148,13 @@ EXECUTE grant_role_to_role_or_user('NHANVIEN_QUANLY', 'NHANVIEN_QUANLY_CHUYENMON
 EXECUTE grant_role_to_role_or_user('NHANVIEN_QUANLY_TAINGUYEN_NHANSU', 'NVQLTN01');
 EXECUTE grant_role_to_role_or_user('NHANVIEN_QUANLY_TAIVU', 'NVQLTV01');
 EXECUTE grant_role_to_role_or_user('NHANVIEN_QUANLY_CHUYENMON', 'NVQLCM01');
-EXECUTE grant_role_to_role_or_user('NHANVIEN_TIEPTAN_DIEUPHOI', 'NVTT01');
-EXECUTE grant_role_to_role_or_user('NHANVIEN_BANTHUOC', 'NVBT01');
-EXECUTE grant_role_to_role_or_user('NHANVIEN_TAIVU', 'NVTV01');
 EXECUTE grant_role_to_role_or_user('NHANVIEN_KETOAN', 'NVKT01');
 EXECUTE grant_role_to_role_or_user('BACSI_DIEUTRI', 'BS01');
 EXECUTE grant_role_to_role_or_user('BACSI_DIEUTRI', 'BS02');
 
 
 
--------DAC policy----------
+-------DAC policies----------
 
 
 EXECUTE create_role('ALLOW_CONNECT');

@@ -14,6 +14,8 @@ const prescriptionRoutes = require('./prescriptions');
 const billsRoutes = require('./bills');
 const medicineDetailRoutes = require('./medicine-detail');
 const billDetailRoutes = require('./bill-detail');
+const chinhanhRoutes = require('./chinhanh');
+const notificationRoutes = require('./notification');
 const privilegeRoutes = require('./privileges');
 
 const { withAuth } = require('../middlewares/withAuth');
@@ -32,6 +34,8 @@ router
   .use('/bills', withAuth, billsRoutes)
   .use('/medicine-details', withAuth, medicineDetailRoutes)
   .use('/bill-details', withAuth, billDetailRoutes)
+  .use('/chinhanh', withAuth, chinhanhRoutes)
+  .use('/notifications', withAuth, notificationRoutes)
   .use('/privileges', withAuth, privilegeRoutes)
 
   .get('/', function (req, res) {

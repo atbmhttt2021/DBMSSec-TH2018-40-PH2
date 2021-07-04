@@ -1,3 +1,5 @@
+-- CONN BENHVIEN/ADMIN@//localhost:1521/pdb01.localdomain
+
 --  Encrypt LUONGCA function
 DECLARE
 BEGIN

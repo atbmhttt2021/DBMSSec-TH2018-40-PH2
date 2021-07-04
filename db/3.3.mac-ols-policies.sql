@@ -1,122 +1,128 @@
--- -- Check if OLS is active on your database:
--- SELECT VALUE FROM v$option WHERE parameter = 'Oracle Label Security';
 
-EXEC LBACSYS.CONFIGURE_OLS;
-EXEC LBACSYS.OLS_ENFORCEMENT.ENABLE_OLS;
-
-create user ols_test IDENTIFIED by ols123 default tablespace users temporary tablespace temp;
-grant connect, resource, select_catalog_role to ols_test;
-ALTER USER lbacsys IDENTIFIED BY tannguyen1011 account unlock;
 --Connect lbacsys
-conn lbacsys/tannguyen1011
-grant execute on sa_components to ols_test with grant option;
-grant execute on sa_user_admin to ols_test with grant option;
-grant execute on sa_label_admin to ols_test with grant option;
-grant execute on sa_policy_admin to ols_test with grant option;
-grant execute on sa_audit_admin to ols_test with grant option;
+conn lbacsys/lbacsys;
+grant execute on sa_components to benhvien with grant option;
+grant execute on sa_user_admin to benhvien with grant option;
+grant execute on sa_label_admin to benhvien with grant option;
+grant execute on sa_policy_admin to benhvien with grant option;
+grant execute on sa_audit_admin to benhvien with grant option;
 
-grant lbac_dba to ols_test;
-grant execute on sa_sysdba to ols_test;
-grant execute on to_lbac_data_label to ols_test;
+grant lbac_dba to benhvien;
+grant execute on sa_sysdba to benhvien;
+grant execute on to_lbac_data_label to benhvien;
 
-EXEC sa_sysdba.create_policy(policy_name => 'HOSO_DICHVU_ols_pol', column_name => 'ols_col', default_options => 'all_control');
+BEGIN
+   sa_sysdba.drop_policy(policy_name => 'THONGBAO_ols_pol');
+   EXCEPTION WHEN OTHERS THEN NULL;
+END;
+/
+BEGIN
+   EXECUTE IMMEDIATE 'DROP ROLE THONGBAO_OLS_POL_DBA';
+   EXCEPTION WHEN OTHERS THEN NULL;
+END;
+/
+
+EXEC sa_sysdba.create_policy(policy_name => 'THONGBAO_ols_pol', column_name => 'ols_col', default_options => 'all_control');
 col policy_options FOR a50 word_wrapped
 col column_name FOR a10
 
-GRANT HOSO_DICHVU_ols_pol_dba TO ols_test;
+GRANT THONGBAO_ols_pol_dba TO benhvien;
 --Level
-EXEC sa_components.create_level(policy_name => 'HOSO_DICHVU_ols_pol', level_num => 10, short_name => 'P', long_name => 'PUBLIC');
-EXEC sa_components.create_level(policy_name => 'HOSO_DICHVU_ols_pol', level_num => 20, short_name => 'C', long_name => 'CONFIDENTIAL');
+EXEC sa_components.create_level(policy_name => 'THONGBAO_ols_pol', level_num => 10, short_name => 'P', long_name => 'PUBLIC');
+EXEC sa_components.create_level(policy_name => 'THONGBAO_ols_pol', level_num => 20, short_name => 'C', long_name => 'CONFIDENTIAL');
 col long_name FOR a20
 --Compartment
-EXEC sa_components.create_compartment(policy_name => 'HOSO_DICHVU_ols_pol',comp_num => '10', short_name => 'KTQ', long_name => 'KHAM TONG QUAT');
-EXEC sa_components.create_compartment(policy_name => 'HOSO_DICHVU_ols_pol',comp_num => '20', short_name => 'SA3D', long_name => 'SIEU AM 3D');
-EXEC sa_components.create_compartment(policy_name => 'HOSO_DICHVU_ols_pol',comp_num => '30', short_name => 'XQ', long_name => 'CHUP X QUANG');
-EXEC sa_components.create_compartment(policy_name => 'HOSO_DICHVU_ols_pol',comp_num => '40', short_name => 'SS', long_name => 'KHAM SO SINH');
-EXEC sa_components.create_compartment(policy_name => 'HOSO_DICHVU_ols_pol',comp_num => '50', short_name => 'DLCHO', long_name => 'DINH LUONG CHOLESTEROL');
-EXEC sa_components.create_compartment(policy_name => 'HOSO_DICHVU_ols_pol',comp_num => '60', short_name => 'TRC', long_name => 'TRAM RANG CAI');
-EXEC sa_components.create_compartment(policy_name => 'HOSO_DICHVU_ols_pol',comp_num => '70', short_name => 'TRRC', long_name => 'TRONG RANG RANG CAI');
-EXEC sa_components.create_compartment(policy_name => 'HOSO_DICHVU_ols_pol',comp_num => '80', short_name => 'BR', long_name => 'BOC RANG SU CAI');
-EXEC sa_components.create_compartment(policy_name => 'HOSO_DICHVU_ols_pol',comp_num => '90', short_name => 'LCR', long_name => 'LAY CAO RANG');
-EXEC sa_components.create_compartment(policy_name => 'HOSO_DICHVU_ols_pol',comp_num => '100', short_name => 'NM', long_name => 'NANG MUI');
-EXEC sa_components.create_compartment(policy_name => 'HOSO_DICHVU_ols_pol',comp_num => '110', short_name => 'DTTT', long_name => 'DIEU TRI DUC THUY TINH THE');
-EXEC sa_components.create_compartment(policy_name => 'HOSO_DICHVU_ols_pol',comp_num => '120', short_name => 'ST', long_name => 'SANH THUONG');
-EXEC sa_components.create_compartment(policy_name => 'HOSO_DICHVU_ols_pol',comp_num => '130', short_name => 'SM', long_name => 'SANH MO');
-EXEC sa_components.create_compartment(policy_name => 'HOSO_DICHVU_ols_pol',comp_num => '140', short_name => 'XNM', long_name => 'XET NGHIEM MAU');
-EXEC sa_components.create_compartment(policy_name => 'HOSO_DICHVU_ols_pol',comp_num => '150', short_name => 'XNNT', long_name => 'XET NGHIEM NUOC TIEU');
-EXEC sa_components.create_compartment(policy_name => 'HOSO_DICHVU_ols_pol',comp_num => '160', short_name => 'ADN', long_name => 'XET NGHIEM ADN');
+EXEC sa_components.create_compartment(policy_name => 'THONGBAO_ols_pol',comp_num => '10', short_name => 'BT', long_name => 'PHONG BAN THUOC');
+EXEC sa_components.create_compartment(policy_name => 'THONGBAO_ols_pol',comp_num => '20', short_name => 'TTDP', long_name => 'PHONG TIEP TAN VA DIEU PHOI');
+EXEC sa_components.create_compartment(policy_name => 'THONGBAO_ols_pol',comp_num => '30', short_name => 'BS', long_name => 'BAC SI'); 
+EXEC sa_components.create_compartment(policy_name => 'THONGBAO_ols_pol',comp_num => '40', short_name => 'TV', long_name => 'PHONG TAI VU');
+EXEC sa_components.create_compartment(policy_name => 'THONGBAO_ols_pol',comp_num => '50', short_name => 'KT', long_name => 'PHONG KE TOAN');
+EXEC sa_components.create_compartment(policy_name => 'THONGBAO_ols_pol',comp_num => '100', short_name => 'QLCM', long_name => 'PHONG QUAN LY CHUYEN MON');
+EXEC sa_components.create_compartment(policy_name => 'THONGBAO_ols_pol',comp_num => '110', short_name => 'QLTV', long_name => 'PHONG QUAN LY TAI VU');
+EXEC sa_components.create_compartment(policy_name => 'THONGBAO_ols_pol',comp_num => '120', short_name => 'QLTN', long_name => 'PHONG QUAN LY TAI NGUYEN');
+
 --Group
-EXEC sa_components.create_group(policy_name => 'HOSO_DICHVU_ols_pol', group_num => 1000, short_name => 'NKK', long_name => 'NGUYEN KIM KHANH');
-EXEC sa_components.create_group(policy_name => 'HOSO_DICHVU_ols_pol', group_num => 2000, short_name => 'LTH', long_name => 'LY THI HIEN');
-EXEC sa_components.create_group(policy_name => 'HOSO_DICHVU_ols_pol', group_num => 2010, short_name => 'PMT', long_name => 'PHAN MINH TRANG');
-EXEC sa_components.create_group(policy_name => 'HOSO_DICHVU_ols_pol', group_num => 2020, short_name => 'NQN', long_name => 'NGUYEN QUYNH NHU');
-EXEC sa_components.create_group(policy_name => 'HOSO_DICHVU_ols_pol', group_num => 2030, short_name => 'PAM', long_name => 'PHAN ANH MINH');
-EXEC sa_components.create_group(policy_name => 'HOSO_DICHVU_ols_pol', group_num => 3000, short_name => 'LNB', long_name => 'LY NGOC BINH');
-EXEC sa_components.create_group(policy_name => 'HOSO_DICHVU_ols_pol', group_num => 3010, short_name => 'TVQ', long_name => 'TRAN VAN QUYET');
-EXEC sa_components.create_group(policy_name => 'HOSO_DICHVU_ols_pol', group_num => 3020, short_name => 'NNH', long_name => 'NGUYEN NGOC HOA');
-EXEC sa_components.create_group(policy_name => 'HOSO_DICHVU_ols_pol', group_num => 3030, short_name => 'PKU', long_name => 'PHAN KIM UYEN');
-EXEC sa_components.create_group(policy_name => 'HOSO_DICHVU_ols_pol', group_num => 3040, short_name => 'LVA', long_name => 'LY VAN AN');
+EXEC sa_components.create_group(policy_name => 'THONGBAO_ols_pol', group_num => 1000, short_name => 'DKTD', long_name => 'BENH VIEN DA KHOA KHU VUC THU DUC');
+EXEC sa_components.create_group(policy_name => 'THONGBAO_ols_pol', group_num => 2000, short_name => 'DKSG', long_name => 'BENH VIEN DA KHOA SAI GON');
+EXEC sa_components.create_group(policy_name => 'THONGBAO_ols_pol', group_num => 2010, short_name => 'NDHCM', long_name => 'BENH VIEN NHIET DOI HO CHI MINH');
 col long_name FOR a30
 --Label function
-CREATE OR REPLACE FUNCTION gen_HOSO_DICHVU_label(ID_KHAMBENH integer, ID_DICVU integer, NGAYGIO timestamp, KETLUAN NVARCHAR2(100),NGUOITHUCHIEN integer)
+CREATE OR REPLACE FUNCTION gen_THONGBAO_label(ID_CHINHANH VARCHAR2, ID_DONVI integer)
 RETURN lbacsys.lbac_label
 AS
   i_label VARCHAR2(80);
 BEGIN
-  IF ID_DICHVU='1' || ID_DICHVU='3' || ID_DICHVU='5' || ID_DICHVU='7' || ID_DICHVU='9' || ID_DICHVU='11' || ID_DICHVU='13' || ID_DICHVU='15' THEN
+  IF ID_DONVI IS NOT NULL THEN
     i_label := 'C:';
+
+    CASE ID_DONVI
+      WHEN 2 THEN i_label := i_label || 'QLTN:';
+      WHEN 3 THEN i_label := i_label || 'QLTV:';
+      WHEN 4 THEN i_label := i_label || 'QLCM:';
+      WHEN 5 THEN i_label := i_label || 'TTDP:';
+      WHEN 6 THEN i_label := i_label || 'TV:';
+      WHEN 7 THEN i_label := i_label || 'BT:';
+      WHEN 8 THEN i_label := i_label || 'KT:';
+      WHEN 9 THEN i_label := i_label || 'BS:';
+    END CASE;
   ELSE
     i_label := 'P:';
   END IF;
-  CASE ID_DICHVU
-	  WHEN '1' THEN i_label := i_label || 'KTQ:';
-	  WHEN '2' THEN i_label := i_label || 'SA3D:';
-      WHEN '3' THEN i_label := i_label || 'XQ:';
-	  WHEN '4' THEN i_label := i_label || 'SS:';
-      WHEN '5' THEN i_label := i_label || 'DLCHO:';
-      WHEN '6' THEN i_label := i_label || 'TRC:';
-      WHEN '7' THEN i_label := i_label || 'TRRC:';
-      WHEN '8' THEN i_label := i_label || 'BR:';
-      WHEN '9' THEN i_label := i_label || 'LCR:';
-      WHEN '10' THEN i_label := i_label || 'NM:';
-      WHEN '11' THEN i_label := i_label || 'DTTT:';
-      WHEN '12' THEN i_label := i_label || 'ST:';
-      WHEN '13' THEN i_label := i_label || 'SM:';
-      WHEN '14' THEN i_label := i_label || 'XNM:';
-      WHEN '15' THEN i_label := i_label || 'XNNT:';
-      WHEN '16' THEN i_label := i_label || 'ADN:';
+
+  CASE ID_CHINHANH
+	  WHEN 'BV001' THEN i_label := i_label || 'DTKD';
+	  WHEN 'BV002' THEN i_label := i_label || 'DKSG';
+      WHEN 'BV003' THEN i_label := i_label || 'NDHCM';
   END CASE;
-  CASE NGUOITHUCHIEN
-	  WHEN '1' THEN i_label := i_label || 'NKK';
-	  WHEN '2' THEN i_label := i_label || 'LTH';
-	  WHEN '3' THEN i_label := i_label || 'PMT';
-	  WHEN '4' THEN i_label := i_label || 'NQN';
-	  WHEN '5' THEN i_label := i_label || 'PAM';
-      WHEN '6' THEN i_label := i_label || 'LNB';
-      WHEN '7' THEN i_label := i_label || 'TVQ';
-      WHEN '8' THEN i_label := i_label || 'NNH';
-      WHEN '9' THEN i_label := i_label || 'PKU';
-      WHEN '10' THEN i_label := i_label || 'LVA';
-  END CASE;
- 
-  RETURN to_lbac_data_label('HOSO_DICHVU_ols_pol',i_label);
+  RETURN to_lbac_data_label('THONGBAO_ols_pol',i_label);
 END;
---
-EXEC sa_policy_admin.apply_table_policy(policy_name => 'HOSO_DICHVU_ols_pol', 
-schema_name => 'ols_test', 
-table_name => 'HOSO_DICHVU',
+/
+
+BEGIN
+sa_policy_admin.apply_table_policy(policy_name => 'THONGBAO_ols_pol', 
+schema_name => 'benhvien', 
+table_name => 'THONGBAO',
 table_options => 'all_control', 
-label_function => 'app.gen_HOSO_DICHVU_label(:new.ID_DICHVU,:new.NGUOITHUCHIEN)');
+label_function => 'gen_THONGBAO_label(:new.ID_CHINHANH,:new.ID_DONVI)');
+END;
+/
 
 
+EXEC sa_user_admin.set_levels(policy_name => 'THONGBAO_ols_pol', user_name => 'NVQLTN01', max_level => 'C');
+EXEC sa_user_admin.set_compartments(policy_name => 'THONGBAO_ols_pol', user_name => 'NVQLTN01', read_comps => 'QLTN', write_comps => 'QLTN')
+exec sa_user_admin.set_groups(policy_name => 'THONGBAO_ols_pol', user_name => 'NVQLTN01', read_groups => 'DKTD');
 
+EXEC sa_user_admin.set_levels(policy_name => 'THONGBAO_ols_pol', user_name => 'NVQLTV01', max_level => 'C');
+EXEC sa_user_admin.set_compartments(policy_name => 'THONGBAO_ols_pol', user_name => 'NVQLTV01', read_comps => 'QLTV')
+exec sa_user_admin.set_groups(policy_name => 'THONGBAO_ols_pol', user_name => 'NVQLTV01', read_groups => 'DKSG');
 
+EXEC sa_user_admin.set_levels(policy_name => 'THONGBAO_ols_pol', user_name => 'NVQLTCM01', max_level => 'C');
+EXEC sa_user_admin.set_compartments(policy_name => 'THONGBAO_ols_pol', user_name => 'NVQLTCM01', read_comps => 'QLTV')
+exec sa_user_admin.set_groups(policy_name => 'THONGBAO_ols_pol', user_name => 'NVQLTCM01', read_groups => 'NDHCM');
 
+EXEC sa_user_admin.set_levels(policy_name => 'THONGBAO_ols_pol', user_name => 'NVTT01', max_level => 'C');
+EXEC sa_user_admin.set_compartments(policy_name => 'THONGBAO_ols_pol', user_name => 'NVTT01', read_comps => 'TTDP')
+exec sa_user_admin.set_groups(policy_name => 'THONGBAO_ols_pol', user_name => 'NVTT01', read_groups => 'DKTD');
 
+EXEC sa_user_admin.set_levels(policy_name => 'THONGBAO_ols_pol', user_name => 'NVBT01', max_level => 'C');
+EXEC sa_user_admin.set_compartments(policy_name => 'THONGBAO_ols_pol', user_name => 'NVBT01', read_comps => 'BT')
+exec sa_user_admin.set_groups(policy_name => 'THONGBAO_ols_pol', user_name => 'NVBT01', read_groups => 'DKSG');
 
+EXEC sa_user_admin.set_levels(policy_name => 'THONGBAO_ols_pol', user_name => 'NVTV01', max_level => 'C');
+EXEC sa_user_admin.set_compartments(policy_name => 'THONGBAO_ols_pol', user_name => 'NVTV01', read_comps => 'TV')
+exec sa_user_admin.set_groups(policy_name => 'THONGBAO_ols_pol', user_name => 'NVTV01', read_groups => 'NDHCM');
 
+EXEC sa_user_admin.set_levels(policy_name => 'THONGBAO_ols_pol', user_name => 'NVKT01', max_level => 'C');
+EXEC sa_user_admin.set_compartments(policy_name => 'THONGBAO_ols_pol', user_name => 'NVKT01', read_comps => 'KT')
+exec sa_user_admin.set_groups(policy_name => 'THONGBAO_ols_pol', user_name => 'NVKT01', read_groups => 'DKTD');
 
+EXEC sa_user_admin.set_levels(policy_name => 'THONGBAO_ols_pol', user_name => 'BS01', max_level => 'C');
+EXEC sa_user_admin.set_compartments(policy_name => 'THONGBAO_ols_pol', user_name => 'BS01', read_comps => 'BS')
+exec sa_user_admin.set_groups(policy_name => 'THONGBAO_ols_pol', user_name => 'BS01', read_groups => 'DKSG');
 
+EXEC sa_user_admin.set_levels(policy_name => 'THONGBAO_ols_pol', user_name => 'BS02', max_level => 'C');
+EXEC sa_user_admin.set_compartments(policy_name => 'THONGBAO_ols_pol', user_name => 'BS02', read_comps => 'BS')
+exec sa_user_admin.set_groups(policy_name => 'THONGBAO_ols_pol', user_name => 'BS02', read_groups => 'NDHCM');
 
 
 

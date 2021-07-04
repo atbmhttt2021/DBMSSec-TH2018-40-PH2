@@ -1,4 +1,5 @@
--- CONNECT benhvien/admin
+-- CONN BENHVIEN/ADMIN@//localhost:1521/pdb01.localdomain
+
 
 
 -------- Setup application CONTEXT--------
