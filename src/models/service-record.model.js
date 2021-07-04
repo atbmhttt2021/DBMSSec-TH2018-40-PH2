@@ -1,6 +1,7 @@
 const conn = require('../utils/db');
 const billModel = require('./bill.model');
 const billDetailModel = require('./bill-detail.model');
+const { schema } = require('../utils/config');
 
 module.exports = credenticals => {
   const db = conn(credenticals);
@@ -8,11 +9,11 @@ module.exports = credenticals => {
   return {
 
     all() {
-      return db('HOSO_DICHVU');
+      return db('HOSO_DICHVU').withSchema(schema);
     },
 
     async single(medicalRecordId, serviceId) {
-      const records = await db('HOSO_DICHVU')
+      const records = await db('HOSO_DICHVU').withSchema(schema)
         .join('DICHVU', 'DICHVU.ID_DICHVU', '=', 'HOSO_DICHVU.ID_DICHVU')
         .where('HOSO_DICHVU.ID_KHAMBENH', medicalRecordId)
         .andWhere('DICHVU.ID_DICHVU', serviceId)
@@ -24,7 +25,7 @@ module.exports = credenticals => {
     },
 
     async add(record) {
-      const recordRes = await db('HOSO_DICHVU')
+      const recordRes = await db('HOSO_DICHVU').withSchema(schema)
         .insert({
           ...record,
           NGAYGIO: db.raw('CURRENT_TIMESTAMP')
@@ -33,14 +34,14 @@ module.exports = credenticals => {
     },
 
     update(medicalRecordId, serviceId, record) {
-      return db('HOSO_DICHVU')
+      return db('HOSO_DICHVU').withSchema(schema)
         .where('ID_KHAMBENH', medicalRecordId)
         .andWhere('ID_DICHVU', serviceId)
         .update(record);
     },
 
     listByMedicalRecord(medicalRecordId) {
-      return db('HOSO_DICHVU')
+      return db('HOSO_DICHVU').withSchema(schema)
         .join('DICHVU', 'DICHVU.ID_DICHVU', '=', 'HOSO_DICHVU.ID_DICHVU')
         .where('ID_KHAMBENH', medicalRecordId)
         .select('HOSO_DICHVU.*', { 'TENDV': 'DICHVU.TENDV' })

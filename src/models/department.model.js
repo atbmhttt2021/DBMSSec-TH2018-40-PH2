@@ -1,4 +1,5 @@
 const conn = require('../utils/db');
+const { schema } = require('../utils/config');
 
 module.exports = credenticals => {
   const db = conn(credenticals);
@@ -6,11 +7,11 @@ module.exports = credenticals => {
   return {
 
     all() {
-      return db('DONVI');
+      return db('DONVI').withSchema(schema);
     },
 
     async single(id) {
-      const departments = await db('DONVI')
+      const departments = await db('DONVI').withSchema(schema)
         .where('ID_DONVI', id);
       if (departments.length === 0) {
         return null;
@@ -20,14 +21,14 @@ module.exports = credenticals => {
     },
 
     async add(department) {
-      await db('DONVI')
+      await db('DONVI').withSchema(schema)
         .insert(department);
       const { VAITRO } = department;
       return await db.raw(`BEGIN create_role('${VAITRO}'); END;`);
     },
 
     async update(id, department) {
-      await db('DONVI')
+      await db('DONVI').withSchema(schema)
         .where('ID_DONVI', id)
         .update(department);
       const { VAITRO } = department;
@@ -35,7 +36,7 @@ module.exports = credenticals => {
     },
 
     delete(id) {
-      return db('DONVI')
+      return db('DONVI').withSchema(schema)
         .where('ID_DONVI', id)
         .del();
     },

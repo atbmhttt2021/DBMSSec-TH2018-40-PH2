@@ -6,7 +6,7 @@ const conn = ({ username, password }) => knex({
     host: '127.0.0.1',
     user: username,
     password,
-    database: 'ORCLCDB.localdomain',
+    database: 'Oracle01',
     port: 1521
   },
   wrapIdentifier: (value, origImpl, queryContext) => {

@@ -160,17 +160,17 @@ EXECUTE grant_role_to_role_or_user('BACSI_DIEUTRI', 'BS02');
 -------DAC policy----------
 
 
-EXECUTE create_role('ALLOW_CONNECT');
+-- EXECUTE create_role('ALLOW_CONNECT');
 EXECUTE create_role('ALLOW_UPDATE_SERVICE_PRICE');
-EXECUTE grant_login_role_privs('ALLOW_CONNECT');
+-- EXECUTE grant_login_role_privs('ALLOW_CONNECT');
 EXECUTE grant_update_service_price_role_privs('ALLOW_UPDATE_SERVICE_PRICE');
 
 
 -- Input: (role name, username)
 -- Policy 1: allow/deny login
-EXECUTE grant_role_with_admin_option('ALLOW_CONNECT', 'NHANVIEN_QUANLY_TAINGUYEN_NHANSU');
-EXECUTE grant_role_to_role_or_user('ALLOW_CONNECT', 'NHANVIEN_QUANLY_TAIVU');
-EXECUTE grant_role_to_role_or_user('ALLOW_CONNECT', 'NHANVIEN_QUANLY_CHUYENMON');
+-- EXECUTE grant_role_with_admin_option('ALLOW_CONNECT', 'NHANVIEN_QUANLY_TAINGUYEN_NHANSU');
+-- EXECUTE grant_role_to_role_or_user('ALLOW_CONNECT', 'NHANVIEN_QUANLY_TAIVU');
+-- EXECUTE grant_role_to_role_or_user('ALLOW_CONNECT', 'NHANVIEN_QUANLY_CHUYENMON');
 -- EXECUTE grant_role_to_role_or_user('ALLOW_CONNECT', 'NVTT01');
 -- EXECUTE grant_role_to_role_or_user('ALLOW_CONNECT', 'NVBT01');
 -- EXECUTE grant_role_to_role_or_user('ALLOW_CONNECT', 'NVTV01');

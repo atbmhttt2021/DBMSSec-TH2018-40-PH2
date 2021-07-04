@@ -1,5 +1,48 @@
 -- CONNECT benhvien/admin
+----------------------------------------------------------------
+----------------------------------------------------------------
+----------------------------------------------------------------
+--VIEWS-------
 
+ALTER SESSION SET "_ORACLE_SCRIPT"=TRUE; 
+--CREATE VIEW TO CHECK ACCOUNT IN TABLE ACCOUNT IN DB
+CREATE OR REPLACE VIEW CHECK_ACCOUNT AS
+SELECT ID_NHANVIEN,TENNV,VAITRO
+FROM NHANVIEN
+WHERE VAITRO IN (
+SELECT SYS_CONTEXT ('USERENV', 'SESSION_USER') 
+FROM DUAL)
+/
+GRANT SELECT ON CHECK_ACCOUNT TO PUBLIC;
+/
+CREATE OR REPLACE VIEW NHANVIEN_CHAMCONG AS
+SELECT *
+FROM CHAMCONG WHERE CHAMCONG.ID_NHANVIEN IN (
+	SELECT ID_NHANVIEN FROM NHANVIEN WHERE VAITRO IN(
+		SELECT SYS_CONTEXT ('USERENV', 'SESSION_USER') 
+          FROM DUAL
+	)
+)
+/
+GRANT INSERT ON CHAMCONG TO PUBLIC;
+CREATE OR REPLACE TRIGGER NHANVIEN_CHAMCONG_UPDATE
+INSTEAD OF INSERT ON NHANVIEN_CHAMCONG
+BEGIN
+INSERT INTO CHAMCONG VALUES(:NEW.ID_NHANVIEN,:NEW.THOIGIAN);
+END;
+/
+GRANT SELECT ON NHANVIEN_CHAMCONG TO PUBLIC;
+/
+CREATE OR REPLACE VIEW NHANVIEN_TIEPTAN_DICHVU AS
+SELECT ID_DICHVU, TENDV
+FROM DICHVU
+/
+
+
+----------------------------------------------------------------
+----------------------------------------------------------------
+----------------------------------------------------------------
+--PROCEDURES-------
 -- Create procedure create role
 CREATE OR REPLACE PROCEDURE create_role( role_name IN VARCHAR2 )
 AUTHID CURRENT_USER 
@@ -19,33 +62,47 @@ END create_role;
 
 --create procedure create user
 CREATE OR REPLACE PROCEDURE create_user(
-	pi_username IN VARCHAR2,
-	pi_password IN VARCHAR2  )
-AUTHID CURRENT_USER
-IS
-	user_name VARCHAR2(50)  	:= pi_username;
-	pwd VARCHAR2(50) 		:= pi_password;
-  li_count       INTEGER	:= 0;
-  lv_stmt   VARCHAR2 (1000);
+	pi_username IN NVARCHAR2,
+	pi_password IN NVARCHAR2) IS
+	
+	user_name NVARCHAR2(20)  	:= pi_username;
+	pwd NVARCHAR2(20) 		:= pi_password;
+   	li_count       INTEGER	:= 0;
+   	lv_stmt   VARCHAR2 (1000);
 BEGIN
-  SELECT COUNT (1)
-    INTO li_count
-    FROM dba_users
-  WHERE username = UPPER ( user_name );
+   	SELECT COUNT (1)
+     	INTO li_count
+     	FROM all_users
+   	WHERE username = UPPER ( user_name );
+   	IF li_count != 0
+   	THEN
+	     EXECUTE IMMEDIATE('ALTER SESSION set "_ORACLE_SCRIPT"=true');
+		lv_stmt := 'DROP USER '|| user_name || ' CASCADE';      	
+		EXECUTE IMMEDIATE ( lv_stmt );
+   	END IF;
+	     EXECUTE IMMEDIATE('ALTER SESSION set "_ORACLE_SCRIPT"=true');
+        lv_stmt := 'CREATE USER ' || user_name || ' IDENTIFIED BY ' || pwd ;
+	DBMS_OUTPUT.put_line(lv_stmt);
 
-  lv_stmt := 'ALTER SESSION set "_ORACLE_SCRIPT"=true';
-  EXECUTE IMMEDIATE ( lv_stmt );
-  
-  IF li_count = 0
-  THEN
-  lv_stmt := 'CREATE USER ' || user_name || ' IDENTIFIED BY ' || pwd;
-  EXECUTE IMMEDIATE ( lv_stmt );
-  END IF;
-                                                    
+	EXECUTE IMMEDIATE ( lv_stmt ); 
+                                                
+        -- ****** Object: Roles for user ******
+	lv_stmt := 'GRANT RESOURCE, CONNECT TO ' || user_name;
+
+	EXECUTE IMMEDIATE ( lv_stmt );
 	COMMIT;
 END create_user;
-/ 
+/
+--Procedure insert into table CHAMCONG
+CREATE OR REPLACE PROCEDURE insert_cham_cong( id_nhanvien IN VARCHAR2,  THOIGIAN TIMESTAMP)
+IS
 
+BEGIN
+  EXECUTE IMMEDIATE 'INSERT INTO CHAMCONG VALUES('||id_nhanvien||','||THOIGIAN||')';
+ 
+END insert_cham_cong;
+/
+GRANT EXECUTE ON insert_cham_cong TO PUBLIC;
 --Procedure grant privileges to QUANLY role
 CREATE OR REPLACE PROCEDURE grant_quanly_privs( pi_rolename IN NVARCHAR2) IS
 	role_name NVARCHAR2(50) := pi_rolename;
@@ -62,12 +119,15 @@ BEGIN
   EXECUTE IMMEDIATE 'GRANT SELECT ON HOADON TO ' || role_name;
   EXECUTE IMMEDIATE 'GRANT SELECT ON CTHOADON TO ' || role_name;
   EXECUTE IMMEDIATE 'GRANT SELECT ON CHAMCONG TO ' || role_name;
-	EXECUTE IMMEDIATE 'GRANT SELECT ON dba_role_privs TO ' || role_name;
+	-- EXECUTE IMMEDIATE 'GRANT SELECT ON dba_role_privs TO ' || role_name;
 COMMIT;
 END grant_quanly_privs;
 /
 
 --Procedure grant privileges to NHANVIEN_QUANLY_TAINGUYEN_NHANSU role
+EXECUTE grant_role_with_admin_option('ALLOW_UPDATE_SERVICE_PRICE', 'NHANVIEN_QUANLY_TAIVU');
+-- EXECUTE grant_role_to_role_or_user('ALLOW_UPDATE_SERVICE_PRICE', 'NVTV01');
+
 CREATE OR REPLACE PROCEDURE grant_quanlytainguyen_privs( pi_rolename IN VARCHAR2) IS
 	role_name VARCHAR2(50) := pi_rolename;
 BEGIN
@@ -77,9 +137,9 @@ BEGIN
 	EXECUTE IMMEDIATE 'GRANT SELECT ON LUONGTHANG TO ' || role_name;
 	EXECUTE IMMEDIATE 'GRANT EXECUTE ON create_role TO ' || role_name;
 	EXECUTE IMMEDIATE 'GRANT EXECUTE ON create_user TO ' || role_name;
-	EXECUTE IMMEDIATE 'GRANT SELECT ON dba_users TO ' || role_name;
-	EXECUTE IMMEDIATE 'GRANT CREATE USER TO ' || role_name;
-	EXECUTE IMMEDIATE 'GRANT CREATE ROLE TO ' || role_name;
+	-- EXECUTE IMMEDIATE 'GRANT SELECT ON dba_users TO ' || role_name;
+--	EXECUTE IMMEDIATE 'GRANT CREATE USER TO ' || role_name;
+--	EXECUTE IMMEDIATE 'GRANT CREATE ROLE TO ' || role_name;
 	EXECUTE IMMEDIATE 'GRANT EXECUTE ON grant_role_to_role_or_user TO ' || role_name;
 	EXECUTE IMMEDIATE 'GRANT EXECUTE ON revoke_role TO ' || role_name;
 COMMIT;
@@ -106,6 +166,9 @@ CREATE OR REPLACE PROCEDURE grant_tieptan_privs( pi_rolename IN NVARCHAR2) IS
 BEGIN
 	EXECUTE IMMEDIATE 'GRANT SELECT, INSERT, UPDATE, DELETE ON BENHNHAN TO ' || role_name;
 	EXECUTE IMMEDIATE 'GRANT SELECT, INSERT, UPDATE, DELETE ON HOSOBENHNHAN TO ' || role_name;
+	EXECUTE IMMEDIATE 'GRANT SELECT ON NHANVIEN_TIEPTAN_DICHVU TO ' || role_name;
+	EXECUTE IMMEDIATE 'GRANT SELECT ON HOSO_DICHVU TO ' || role_name;
+	EXECUTE IMMEDIATE 'GRANT UPDATE(NGUOITHUCHIEN) ON HOSO_DICHVU TO ' || role_name;
 COMMIT;
 END grant_tieptan_privs;
 /
@@ -139,6 +202,9 @@ CREATE OR REPLACE PROCEDURE grant_ketoan_privs( pi_rolename IN NVARCHAR2) IS
 BEGIN
   lv_stmt:='GRANT SELECT ON NHANVIEN TO ' || role_name;
 	EXECUTE IMMEDIATE ( lv_stmt ); 
+	EXECUTE IMMEDIATE 'GRANT SELECT ON CHAMCONG TO ' || role_name; 
+	EXECUTE IMMEDIATE 'GRANT INSERT,SELECT,UPDATE,DELETE ON LUONGTHANG TO ' || role_name; 
+	
 COMMIT;
 END grant_ketoan_privs;
 /
@@ -153,6 +219,7 @@ BEGIN
 COMMIT;
 END grant_bacsi_privs;
 /
+
 
 --Procedure grant role to role or user 
 CREATE OR REPLACE PROCEDURE grant_role_to_role_or_user( pi_rolename IN NVARCHAR2, pi_dest IN NVARCHAR2) IS
@@ -169,15 +236,15 @@ END grant_role_to_role_or_user;
 
 --------DAC--------
 --Procedure grant login role or user 
-CREATE OR REPLACE PROCEDURE grant_login_role_privs( pi_role_or_user_name IN NVARCHAR2) IS
-	role_or_user_name NVARCHAR2(50) := pi_role_or_user_name;
-  lv_stmt   VARCHAR2 (1000);
-BEGIN
-  lv_stmt:='GRANT CREATE SESSION TO ' || role_or_user_name;
-	EXECUTE IMMEDIATE ( lv_stmt ); 
-COMMIT;
-END grant_login_role_privs;
-/
+-- CREATE OR REPLACE PROCEDURE grant_login_role_privs( pi_role_or_user_name IN NVARCHAR2) IS
+-- 	role_or_user_name NVARCHAR2(50) := pi_role_or_user_name;
+--   lv_stmt   VARCHAR2 (1000);
+-- BEGIN
+--   lv_stmt:='GRANT CREATE SESSION TO ' || role_or_user_name;
+-- 	EXECUTE IMMEDIATE ( lv_stmt ); 
+-- COMMIT;
+-- END grant_login_role_privs;
+-- /
 
 --Procedure grant update service price to role or user 
 CREATE OR REPLACE PROCEDURE grant_update_service_price_role_privs( pi_role_or_user_name IN NVARCHAR2) IS
@@ -222,3 +289,8 @@ CREATE OR REPLACE PUBLIC SYNONYM create_role FOR create_role;
 CREATE OR REPLACE PUBLIC SYNONYM create_user FOR create_user;
 CREATE OR REPLACE PUBLIC SYNONYM grant_role_to_role_or_user FOR grant_role_to_role_or_user;
 CREATE OR REPLACE PUBLIC SYNONYM revoke_role FOR revoke_role;
+----------------------------------------------------------------
+----------------------------------------------------------------
+----------------------------------------------------------------
+
+

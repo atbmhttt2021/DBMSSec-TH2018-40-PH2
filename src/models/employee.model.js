@@ -1,5 +1,6 @@
 const conn = require('../utils/db');
 const crypto = require('crypto-js');
+const { schema } = require('../utils/config');
 
 module.exports = credenticals => {
   const db = conn(credenticals);
@@ -7,13 +8,13 @@ module.exports = credenticals => {
   return {
 
     all() {
-      return db('NHANVIEN')
+      return db('NHANVIEN').withSchema(schema)
         .join('DONVI', 'DONVI.ID_DONVI', '=', 'NHANVIEN.DONVI')
         .select('NHANVIEN.*', 'DONVI.TENDV');
     },
 
     async single(id) {
-      const employees = await db('NHANVIEN')
+      const employees = await db('NHANVIEN').withSchema(schema)
         .join('DONVI', 'DONVI.ID_DONVI', '=', 'NHANVIEN.DONVI')
         .select('NHANVIEN.*', 'DONVI.TENDV')
         .where('ID_NHANVIEN', id);
@@ -53,7 +54,7 @@ module.exports = credenticals => {
 
     async add(employee) {
       const { PASSWORD, ...info } = employee;
-      await db('NHANVIEN')
+      await db('NHANVIEN').withSchema(schema)
         .insert({
           ...info,
           NGAYSINH: db.raw(`TO_DATE('${info.NGAYSINH}', 'yyyy/mm/dd')`)
@@ -85,7 +86,7 @@ module.exports = credenticals => {
 
     async update(id, employee) {
       // get previous role
-      const old = await db('NHANVIEN')
+      const old = await db('NHANVIEN').withSchema(schema)
         .join('DONVI', 'DONVI.ID_DONVI', '=', 'NHANVIEN.DONVI')
         .select('DONVI.VAITRO')
         .where('NHANVIEN.ID_NHANVIEN', id)
@@ -104,7 +105,7 @@ module.exports = credenticals => {
       }
 
       // Update
-      await db('NHANVIEN')
+      await db('NHANVIEN').withSchema(schema)
         .where('ID_NHANVIEN', id)
         .update({
           ...employee,
@@ -126,25 +127,25 @@ module.exports = credenticals => {
     },
 
     delete(id) {
-      return db('NHANVIEN')
+      return db('NHANVIEN').withSchema(schema)
         .where('ID_NHANVIEN', id)
         .del();
     },
 
     doctors() {
-      return db('NHANVIEN')
+      return db('NHANVIEN').withSchema(schema)
         .join('DONVI', 'DONVI.ID_DONVI', '=', 'NHANVIEN.DONVI')
         .select('NHANVIEN.ID_NHANVIEN', 'NHANVIEN.TENNV')
         .where('DONVI.TENDV', 'like', 'Khoa%');
     },
     salemen() {
-      return db('NHANVIEN')
+      return db('NHANVIEN').withSchema(schema)
         .join('DONVI', 'DONVI.ID_DONVI', '=', 'NHANVIEN.DONVI')
         .select('NHANVIEN.ID_NHANVIEN', 'NHANVIEN.TENNV')
         .where('DONVI.TENDV', 'like', '%bán thuốc%');
     },
     cashiers() {
-      return db('NHANVIEN')
+      return db('NHANVIEN').withSchema(schema)
         .join('DONVI', 'DONVI.ID_DONVI', '=', 'NHANVIEN.DONVI')
         .select('NHANVIEN.ID_NHANVIEN', 'NHANVIEN.TENNV')
         .where('DONVI.TENDV', 'like', '%tài vụ%');

@@ -1,5 +1,6 @@
 const moment = require('moment');
 const conn = require('../utils/db');
+const { schema } = require('../utils/config');
 
 module.exports = credenticals => {
   const db = conn(credenticals);
@@ -7,11 +8,13 @@ module.exports = credenticals => {
   return {
 
     all() {
-      return db('HOSOBENHNHAN');
+      const listRecord=db('HOSOBENHNHAN').withSchema(schema);
+      
+      return listRecord;
     },
 
     async single(id) {
-      const records = await db('HOSOBENHNHAN')
+      const records = await db('HOSOBENHNHAN').withSchema(schema)
         .join('NHANVIEN', 'NHANVIEN.ID_NHANVIEN', '=', 'HOSOBENHNHAN.MABS')
         .select('HOSOBENHNHAN.*', { 'TENBS': 'NHANVIEN.TENNV' })
         .where('ID_KHAMBENH', id);
@@ -23,7 +26,7 @@ module.exports = credenticals => {
 
     async add(record) {
       const today = moment(new Date()).format('YYYY-MM-DD');
-      const ids = await db('HOSOBENHNHAN')
+      const ids = await db('HOSOBENHNHAN').withSchema(schema)
         .insert({
           ...record,
           NGAYKB: db.raw(`TO_DATE('${today}', 'yyyy/mm/dd')`)
@@ -37,14 +40,14 @@ module.exports = credenticals => {
 
     async addByOldId(id, record) {
       const today = moment(new Date()).format('YYYY-MM-DD');
-      const patients = await db('HOSOBENHNHAN')
+      const patients = await db('HOSOBENHNHAN').withSchema(schema)
         .select('ID_BENHNHAN')
         .where('ID_KHAMBENH', id);
       if (patients.length === 0) {
         return null;
       }
       const patientId = patients[0].ID_BENHNHAN;
-      const ids = await db('HOSOBENHNHAN')
+      const ids = await db('HOSOBENHNHAN').withSchema(schema)
         .insert({
           ...record,
           NGAYKB: db.raw(`TO_DATE('${today}', 'yyyy/mm/dd')`),
