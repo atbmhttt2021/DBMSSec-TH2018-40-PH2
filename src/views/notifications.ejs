@@ -40,6 +40,7 @@
                   <thead>
                     <tr>
                       <th></th>
+                      <th scope="col">Mã thông báo</th>
                       <th scope="col">Chi nhánh</th>
                       <th scope="col">Phòng ban</th>
                       <th scope="col">Nội dung</th>
@@ -49,6 +50,7 @@
                     <% for(let i=0; i<list.length; i++) { %>
                       <tr>
                         <td class="select-checkbox"></td>
+                        <td><%= list[i].ID_VANBAN %></td>
                         <td><%= list[i].ID_CHINHANH %></td>
                         <td><%= list[i].ID_DONVI %></td>
                         <td><%= list[i].NOIDUNG %></td>

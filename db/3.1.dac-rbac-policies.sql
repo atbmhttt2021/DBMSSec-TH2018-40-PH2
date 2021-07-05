@@ -222,3 +222,5 @@ EXECUTE grant_role_to_role_or_user('ALLOW_CONNECT', 'NHANVIEN_QUANLY_CHUYENMON')
 -- Policy 2: allow TAIVU update DICHVU(DONGIA) 
 EXECUTE grant_role_with_admin_option('ALLOW_UPDATE_SERVICE_PRICE', 'NHANVIEN_QUANLY_TAIVU');
 -- EXECUTE grant_role_to_role_or_user('ALLOW_UPDATE_SERVICE_PRICE', 'NVTV01');
+
+grant select on THONGBAO to PUBLIC;

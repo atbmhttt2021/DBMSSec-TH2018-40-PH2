@@ -25,10 +25,10 @@ router.get('/', async function (req, res) {
 
 // Get one
 router.get('/:id', async function (req, res) {
-  const id = req.params.id;
+  const id = +req.params.id;
   try {
     const model = notificationModel(req.session.passport.user)
-    info = await model.single(id);;
+    info = await model.single(id);
     res.status(200).json(info)
   } catch (error) {
     console.log(error);
@@ -49,7 +49,9 @@ router.post('/', async function (req, res) {
 
 // Update
 router.put('/:id', async function (req, res) {
-  const id = req.params.id;
+  console.log('req.params :>> ', req.params);
+  console.log('req.body :>> ', req.body);
+  const id = +req.params.id;
   const data = req.body;
   try {
     const model = notificationModel(req.session.passport.user)

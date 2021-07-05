@@ -20,8 +20,8 @@
         </div>
 
         <div class="justify-content-between py-2">
-          <label class="pr-2" for="selectDonviId">Đơn vị*</label>
-          <select id="selectDonviId" class="custom-select" style="width: 100%" required></select>
+          <label class="pr-2" for="selectDonviId">Đơn vị</label>
+          <select id="selectDonviId" class="custom-select" style="width: 100%"></select>
         </div>
 
 
@@ -35,7 +35,7 @@
       </div>
 
       <div class="modal-footer py-1 border-top-0">
-        <button type="submit" class="btn btn-success">Lưu</button>
+        <button id="btnSubmit" type="submit" class="btn btn-success">Lưu</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
       </div>
 
@@ -67,8 +67,9 @@
       url: `/departments/list`,
       dataType: 'json',
       processResults: function (data) {
+        const allItem = { id: null, text: 'Tất cả nhân viên' }
         return {
-          results: data.map(item => ({ ...item, id: item.ID_DONVI, text: item.TENDV }))
+          results: [allItem, ...data.map(item => ({ ...item, id: item.ID_DONVI, text: item.TENDV }))]
         };
       }
     },
@@ -81,9 +82,10 @@
   $('#detailModal').on('show.bs.modal', function (event) {
     const id = $('#selectedVal').text();
     if (id) {
+      $('#btnSubmit').hide();
       $('#detailModal #inputId').val(id);
       $.ajax({
-        url: `/bills/${+id}`,
+        url: `/notifications/${+id}`,
         type: 'GET',
         dataType: 'json',
         contentType: 'application/json'
@@ -108,6 +110,7 @@
     if (!id) {
       $('#inputId').hide();
       $('label[for=inputId]').hide();
+      $('#btnSubmit').show();
     }
 
   });
@@ -146,6 +149,7 @@
           $('#inputId').show();
           $('label[for=inputId]').show();
         }
+          window.location.reload();
       })
     }).fail(function (error) {
       console.log('error', error)

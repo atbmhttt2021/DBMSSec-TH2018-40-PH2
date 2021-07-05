@@ -79,6 +79,7 @@ BEGIN
 	EXECUTE IMMEDIATE 'GRANT EXECUTE ON grant_role_to_role_or_user TO ' || role_name;
 	EXECUTE IMMEDIATE 'GRANT EXECUTE ON revoke_role TO ' || role_name;
 	EXECUTE IMMEDIATE 'GRANT INSERT, UPDATE ON THONGBAO TO ' || role_name;
+	EXECUTE IMMEDIATE 'GRANT SELECT ON CHINHANHBV TO ' || role_name;
 COMMIT;
 END grant_quanlytainguyen_privs;
 /

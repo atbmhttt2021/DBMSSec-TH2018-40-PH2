@@ -33,6 +33,7 @@ file_name_convert = ('pdbseed', 'pdb01');
 alter pluggable database pdb01 open;
 alter session set container=pdb01;
 show con_name;
+grant CONNECT, RESOURCE, DBA, SYSDBA to SYSADMIN WITH ADMIN OPTION;
 
 
 ------- Create schema that own all table and 

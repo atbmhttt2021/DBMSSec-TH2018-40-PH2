@@ -12,8 +12,8 @@ module.exports = credenticals => {
 
     async single(id) {
       const notifications = await db('THONGBAO')
-        .where('ID_THONGBAO', id)
-      if (bills.length === 0) {
+        .where('ID_VANBAN', id)
+      if (notifications.length === 0) {
         return null;
       }
 
@@ -27,13 +27,13 @@ module.exports = credenticals => {
 
     update(id, notification) {
       return db('THONGBAO')
-        .where('ID_THONGBAO', id)
+        .where('ID_VANBAN', id)
         .update(notification);
     },
 
     delete(id) {
       return db('THONGBAO')
-        .where('ID_THONGBAO', id)
+        .where('ID_VANBAN', id)
         .del();
     },
   }

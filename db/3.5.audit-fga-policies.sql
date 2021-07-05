@@ -13,15 +13,37 @@ AUDIT CONNECT;
 ------------------------------------------------------------------
 --- Sau do chay may lenh nay:
 
---- Bat audit tren 2 table nay
-----1. Audit login fail
-/*audit policy 1: audit select on key_salary */
+
+----1. Audit thuong
+
+/*audit policy 1: Audit login fail */
 AUDIT SESSION WHENEVER NOT SUCCESSFUL;
-/*audit policy 2: audit xoa bang trong database
-*/
-AUDIT DELETE ANY TABLE WHENEVER NOT SUCCESSFUL;
 --- Xem ket qua audit
 select username, owner, obj_name, action_name, sql_text from dba_audit_trail;
+
+/*audit policy 2: audit hoat dong cua nguoi dung co quyen dba
+*/
+create or replace procedure audit_user_dba
+is
+--DECLARE CustomerID nvarchar2(50)
+begin
+FOR eachUser IN(
+SELECT
+   grantee
+FROM dba_role_privs where granted_role='DBA')
+LOOP 
+ if eachUser.grantee !='SYS' AND eachUser.grantee !='SYSTEM' THEN
+ 
+ EXECUTE IMMEDIATE ('AUDIT SELECT TABLE,UPDATE TABLE,DELETE TABLE, INSERT TABLE BY '||eachUser.grantee );
+ END IF;
+END LOOP;
+END audit_user_dba;
+/
+EXECUTE audit_user_dba;
+
+--- Xem ket qua audit
+select username, owner, obj_name, action_name, sql_text from dba_audit_trail;
+
 
 ----2. FGA
 /*audit policy 3: audit update salary 
