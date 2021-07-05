@@ -13,7 +13,8 @@ CONNECT sys/oracle AS sysdba;
 -- connect / as sysdba;
 
 
------- Create file: vi /u01/app/oracle/product/12.2.0/dbhome_1/network/admin/tnsnames.ora to login with user in PDB01 container:
+------ Create file: vi /u01/app/oracle/product/12.2.0/dbhome_1/network/admin/tnsnames.ora 
+----to login with user in PDB01 container:
 -- PDB01 = (DESCRIPTION =
 --     (ADDRESS = (PROTOCOL = TCP)(HOST = 0.0.0.0)(PORT = 1521))
 --     (CONNECT_DATA =
@@ -25,14 +26,13 @@ CONNECT sys/oracle AS sysdba;
 -- CONNECT / AS sysdba; 
 -- show pdbs;
 -- col NAME format A12;
--- alter session set container=cdb$root;
--- create pluggable database pdb01 admin user SYSADMIN identified by ADMIN
--- file_name_convert = ('pdbseed', 'pdb01');
--- select pdb_name from cdb_pdbs;
--- col name format a30;
--- alter pluggable database pdb01 open;
--- alter session set container=pdb01;
--- show con_name;
+alter session set container=cdb$root;
+create pluggable database pdb01 admin user SYSADMIN identified by ADMIN
+file_name_convert = ('pdbseed', 'pdb01');
+
+alter pluggable database pdb01 open;
+alter session set container=pdb01;
+show con_name;
 
 
 ------- Create schema that own all table and 

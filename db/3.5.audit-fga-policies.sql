@@ -8,7 +8,7 @@ connect / as sysdba
 --- alter system set audit_trail = db,extended scope = spfile;
 --- shutdown immediate;
 --- startup;
-ALTER SYSTEM SET audit_sys_operations = true scope = spfile;
+-- ALTER SYSTEM SET audit_sys_operations = true scope = spfile;
 AUDIT CONNECT;
 ------------------------------------------------------------------
 --- Sau do chay may lenh nay:
@@ -30,7 +30,7 @@ select username, owner, obj_name, action_name, sql_text from dba_audit_trail;
 */
 
 BEGIN
-  DBMS_FGA.drop_POLICY(
+  DBMS_FGA.ADD_POLICY(
    object_schema      => 'benhvien',
    object_name        => 'NHANVIEN',
    policy_name        => 'audit_salary',

@@ -115,8 +115,31 @@ EXECUTE create_user('NVTT01','NVTT01');
 EXECUTE create_user('NVBT01','NVBT01');
 EXECUTE create_user('NVTV01','NVTV01');
 EXECUTE create_user('NVKT01','NVKT01');
+EXECUTE create_user('NVKT02','NVKT02');
 EXECUTE create_user('BS01','BS01');
 EXECUTE create_user('BS02','BS02');
+
+EXECUTE create_user('NVQLTN02','NVQLTN02');
+EXECUTE create_user('NVQLTV02','NVQLTV02');
+EXECUTE create_user('NVQLCM02','NVQLCM02');
+EXECUTE create_user('NVTT02','NVTT02');
+EXECUTE create_user('NVBT02','NVBT02');
+EXECUTE create_user('NVTV02','NVTV02');
+EXECUTE create_user('NVKT03','NVKT03');
+EXECUTE create_user('NVKT04','NVKT04');
+EXECUTE create_user('BS03','BS03');
+EXECUTE create_user('BS04','BS04');
+
+EXECUTE create_user('NVQLTN03','NVQLTN03');
+EXECUTE create_user('NVQLTV03','NVQLTV03');
+EXECUTE create_user('NVQLCM03','NVQLCM03');
+EXECUTE create_user('NVTT03','NVTT03');
+EXECUTE create_user('NVBT03','NVBT03');
+EXECUTE create_user('NVTV03','NVTV03');
+EXECUTE create_user('NVKT05','NVKT05');
+EXECUTE create_user('NVKT06','NVKT06');
+EXECUTE create_user('BS05','BS05');
+EXECUTE create_user('BS06','BS06');
 
 
 
@@ -137,11 +160,17 @@ EXECUTE grant_bacsi_privs('BACSI_DIEUTRI');
 -- Execute grant role to roles
 -- Input: (soure name, dest name)
 EXECUTE grant_role_to_role_or_user('NHANVIEN_QUANLY', 'NHANVIEN_QUANLY_TAINGUYEN_NHANSU');
+EXECUTE grant_role_to_role_or_user('NHANVIEN_QUANLY', 'NHANVIEN_QUANLY_TAIVU');
+EXECUTE grant_role_to_role_or_user('NHANVIEN_QUANLY', 'NHANVIEN_QUANLY_CHUYENMON');
 EXECUTE grant_role_to_role_or_user('NHANVIEN_TIEPTAN_DIEUPHOI', 'NVTT01');
 EXECUTE grant_role_to_role_or_user('NHANVIEN_BANTHUOC', 'NVBT01');
 EXECUTE grant_role_to_role_or_user('NHANVIEN_TAIVU', 'NVTV01');
-EXECUTE grant_role_to_role_or_user('NHANVIEN_QUANLY', 'NHANVIEN_QUANLY_TAIVU');
-EXECUTE grant_role_to_role_or_user('NHANVIEN_QUANLY', 'NHANVIEN_QUANLY_CHUYENMON');
+EXECUTE grant_role_to_role_or_user('NHANVIEN_TIEPTAN_DIEUPHOI', 'NVTT02');
+EXECUTE grant_role_to_role_or_user('NHANVIEN_BANTHUOC', 'NVBT02');
+EXECUTE grant_role_to_role_or_user('NHANVIEN_TAIVU', 'NVTV02');
+EXECUTE grant_role_to_role_or_user('NHANVIEN_TIEPTAN_DIEUPHOI', 'NVTT03');
+EXECUTE grant_role_to_role_or_user('NHANVIEN_BANTHUOC', 'NVBT03');
+EXECUTE grant_role_to_role_or_user('NHANVIEN_TAIVU', 'NVTV03');
 
 -- Execute grant role to users
 -- Input: (soure name, dest name)
@@ -149,8 +178,23 @@ EXECUTE grant_role_to_role_or_user('NHANVIEN_QUANLY_TAINGUYEN_NHANSU', 'NVQLTN01
 EXECUTE grant_role_to_role_or_user('NHANVIEN_QUANLY_TAIVU', 'NVQLTV01');
 EXECUTE grant_role_to_role_or_user('NHANVIEN_QUANLY_CHUYENMON', 'NVQLCM01');
 EXECUTE grant_role_to_role_or_user('NHANVIEN_KETOAN', 'NVKT01');
+EXECUTE grant_role_to_role_or_user('NHANVIEN_KETOAN', 'NVKT02');
 EXECUTE grant_role_to_role_or_user('BACSI_DIEUTRI', 'BS01');
 EXECUTE grant_role_to_role_or_user('BACSI_DIEUTRI', 'BS02');
+EXECUTE grant_role_to_role_or_user('NHANVIEN_QUANLY_TAINGUYEN_NHANSU', 'NVQLTN02');
+EXECUTE grant_role_to_role_or_user('NHANVIEN_QUANLY_TAIVU', 'NVQLTV02');
+EXECUTE grant_role_to_role_or_user('NHANVIEN_QUANLY_CHUYENMON', 'NVQLCM02');
+EXECUTE grant_role_to_role_or_user('NHANVIEN_KETOAN', 'NVKT03');
+EXECUTE grant_role_to_role_or_user('NHANVIEN_KETOAN', 'NVKT04');
+EXECUTE grant_role_to_role_or_user('BACSI_DIEUTRI', 'BS03');
+EXECUTE grant_role_to_role_or_user('BACSI_DIEUTRI', 'BS04');
+EXECUTE grant_role_to_role_or_user('NHANVIEN_QUANLY_TAINGUYEN_NHANSU', 'NVQLTN03');
+EXECUTE grant_role_to_role_or_user('NHANVIEN_QUANLY_TAIVU', 'NVQLTV03');
+EXECUTE grant_role_to_role_or_user('NHANVIEN_QUANLY_CHUYENMON', 'NVQLCM03');
+EXECUTE grant_role_to_role_or_user('NHANVIEN_KETOAN', 'NVKT05');
+EXECUTE grant_role_to_role_or_user('NHANVIEN_KETOAN', 'NVKT06');
+EXECUTE grant_role_to_role_or_user('BACSI_DIEUTRI', 'BS05');
+EXECUTE grant_role_to_role_or_user('BACSI_DIEUTRI', 'BS06');
 
 
 
