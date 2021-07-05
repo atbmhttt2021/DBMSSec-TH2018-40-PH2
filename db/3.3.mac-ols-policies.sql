@@ -22,10 +22,6 @@ BEGIN
 END;
 /
 
-BEGIN
-   EXECUTE IMMEDIATE 'DROP ROLE THONGBAO_OLS_POL_DBA';
-   EXCEPTION WHEN OTHERS THEN NULL;
-END;
 EXEC sa_sysdba.create_policy(policy_name => 'THONGBAO_ols_pol', column_name => 'ols_label', default_options => 'all_control');
 col policy_options FOR a50 word_wrapped
 col column_name FOR a10
