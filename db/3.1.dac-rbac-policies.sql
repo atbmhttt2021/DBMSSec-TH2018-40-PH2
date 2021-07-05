@@ -111,15 +111,15 @@ EXECUTE create_role('BACSI_DIEUTRI');
 
 -- Execute create users
 -- Input: (username, password)
-EXECUTE create_user('NVQLTN01','NVQLTN01');
-EXECUTE create_user('NVQLTV01','NVQLTV01');
-EXECUTE create_user('NVQLCM01','NVQLCM01');
-EXECUTE create_user('NVTT01','NVTT01');
-EXECUTE create_user('NVBT01','NVBT01');
-EXECUTE create_user('NVTV01','NVTV01');
-EXECUTE create_user('NVKT01','NVKT01');
-EXECUTE create_user('BS01','BS01');
-EXECUTE create_user('BS02','BS02');
+-- EXECUTE create_user('NVQLTN01','NVQLTN01');
+-- EXECUTE create_user('NVQLTV01','NVQLTV01');
+-- EXECUTE create_user('NVQLCM01','NVQLCM01');
+-- EXECUTE create_user('NVTT01','NVTT01');
+-- EXECUTE create_user('NVBT01','NVBT01');
+-- EXECUTE create_user('NVTV01','NVTV01');
+-- EXECUTE create_user('NVKT01','NVKT01');
+-- EXECUTE create_user('BS01','BS01');
+-- EXECUTE create_user('BS02','BS02');
 
 
 

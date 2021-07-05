@@ -37,9 +37,15 @@ module.exports = credenticals => {
       // If count > 0
       const { COUNT } = existCheckinCounter[0];
       if (COUNT !== 0) return null;
-          var timeNow= db.raw('CURRENT_TIMESTAMP');
+         
       // If count = 0
-      return db.raw('EXECUTE '+schema+'.insert_cham_cong('+ID_NHANVIEN+','+timeNow+')');
+      var insert= db('CHAMCONG').withSchema(schema)
+        .insert({
+          ID_NHANVIEN,
+          THOIGIAN: db.raw('CURRENT_TIMESTAMP')
+        })
+        .returning('THOIGIAN');
+        return true;
     },
   }
 };

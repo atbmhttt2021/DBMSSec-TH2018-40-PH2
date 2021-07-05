@@ -2,80 +2,129 @@
 
 
 -------- Setup application CONTEXT--------
-create or replace context benhvien using context_package;
-/
+-- create or replace context benhvien using context_package;
+-- /
 
--- create context package
+-- -- create context package
+-- create or replace package context_package
+--   AUTHID CURRENT_USER
+--   as
+--   procedure set_context;
+--   procedure set_role_context;
+-- end;
+-- /
+
+-- --create context package body
+-- create or replace package body context_package is 
+--   procedure set_context is
+--   schema_owner varchar2(50) := 'benhvien';
+--   v_user varchar2(50);
+--   v_id number;
+--   begin 
+--     DBMS_session.set_context(schema_owner,'setup','true');
+--     v_user := sys_context('userenv','session_user');
+
+--     begin
+--       select ID_NHANVIEN
+--       into v_id
+--       from NHANVIEN
+--       where VAITRO=v_user;
+
+--       DBMS_session.set_context(schema_owner,'user_id',v_id);
+--     EXCEPTION
+--       when NO_DATA_FOUND THEN
+--       DBMS_session.set_context(schema_owner,'user_id',0);
+--     end;
+
+--     DBMS_session.set_context(schema_owner,'setup','false');
+--   end set_context;
+  
+--   procedure set_role_context is
+--   schema_owner varchar2(50) := 'benhvien';
+--   v_user varchar2(50);
+--   v_role varchar2(50);
+--   begin 
+--     v_user := sys_context('userenv','session_user');
+
+--     begin
+--       select dv.VAITRO
+--       into v_role
+--       from DONVI dv join NHANVIEN nv on dv.ID_DONVI = nv.DONVI
+--       where nv.VAITRO=v_user;
+
+--       DBMS_session.set_context(schema_owner,'role',v_role);
+--     EXCEPTION
+--       when NO_DATA_FOUND THEN
+--       DBMS_session.set_context(schema_owner,'role',null);
+--     end;
+
+--   end set_role_context;
+-- end context_package;
+-- /
+
+-- -- grant context to all user
+-- create or replace public synonym context_package for context_package;
+-- grant execute on context_package to public;
+-- /
+
+-- --set context
+-- create or replace trigger set_security_context
+-- after logon on database
+-- begin
+--   context_package.set_context;
+--   context_package.set_role_context;
+-- end;
+-- /
+ -- create context package
+
+
 create or replace package context_package
   AUTHID CURRENT_USER
-  as
-  procedure set_context;
-  procedure set_role_context;
-end;
-/
+   as
+   function check_context_id return number;
+   function check_context_role return varchar2;
+ end;
+ /
+ drop package context_package;
 
---create context package body
-create or replace package body context_package is 
-  procedure set_context is
-  schema_owner varchar2(50) := 'benhvien';
+ --create context package body
+-- create or replace package body context_package is 
+  create or replace  function get_id_context
+  return number
+ as 
+  schema_owner varchar2(50) := 'system';
   v_user varchar2(50);
   v_id number;
   begin 
-    DBMS_session.set_context(schema_owner,'setup','true');
     v_user := sys_context('userenv','session_user');
-
-    begin
       select ID_NHANVIEN
       into v_id
-      from NHANVIEN
+      from system.NHANVIEN
       where VAITRO=v_user;
 
-      DBMS_session.set_context(schema_owner,'user_id',v_id);
-    EXCEPTION
-      when NO_DATA_FOUND THEN
-      DBMS_session.set_context(schema_owner,'user_id',0);
-    end;
-
-    DBMS_session.set_context(schema_owner,'setup','false');
-  end set_context;
+return v_id;
+  end get_id_context;
+  /
   
-  procedure set_role_context is
-  schema_owner varchar2(50) := 'benhvien';
+create or replace function get_role_context
+return varchar2
+as
+  schema_owner varchar2(50) := 'system';
   v_user varchar2(50);
   v_role varchar2(50);
   begin 
     v_user := sys_context('userenv','session_user');
-
-    begin
+begin
       select dv.VAITRO
       into v_role
       from DONVI dv join NHANVIEN nv on dv.ID_DONVI = nv.DONVI
       where nv.VAITRO=v_user;
-
-      DBMS_session.set_context(schema_owner,'role',v_role);
-    EXCEPTION
-      when NO_DATA_FOUND THEN
-      DBMS_session.set_context(schema_owner,'role',null);
-    end;
-
-  end set_role_context;
-end context_package;
-/
-
--- grant context to all user
-create or replace public synonym context_package for context_package;
-grant execute on context_package to public;
-/
-
---set context
-create or replace trigger set_security_context
-after logon on database
-begin
-  context_package.set_context;
-  context_package.set_role_context;
 end;
-/
 
+return v_role;
+--  end check_context_role;
+ end get_role_context;
+ /
 
 -------- Setup VPD --------
 
@@ -83,8 +132,8 @@ end;
 --create VPD policy 1: NHANVIEN only see their info
 
 -- Grant select to all user
-grant select on donvi to public;
-grant select on nhanvien to public;
+-- grant select on donvi to public;
+-- grant select on nhanvien to public;
 
 -- create package
 create or replace package vpd_security_package 
@@ -94,7 +143,7 @@ create or replace package vpd_security_package
   return varchar2;
   function nhanvien_on_select_security(owner varchar2, Objname varchar2)
   return varchar2;
-  function hosobenhan_on_bacsi_select_security(owner varchar2, Objname varchar2)
+  function hosobenhnhan_on_bacsi_select_security(owner varchar2, Objname varchar2)
   return varchar2;
 
 end vpd_security_package;
@@ -131,7 +180,7 @@ create or replace package body vpd_security_package is
   end nhanvien_on_select_security;
 
   -- Setup policy VPD 2
-  function hosobenhan_on_bacsi_select_security(owner varchar2, Objname varchar2)
+  function hosobenhnhan_on_bacsi_select_security(owner varchar2, Objname varchar2)
     return varchar2 is
     predicate varchar2(2000);
     begin
@@ -151,9 +200,9 @@ create or replace package body vpd_security_package is
         predicate := 'MABS=sys_context(''benhvien'',''user_id'')';
       end if;
     return predicate;
-  end hosobenhan_on_bacsi_select_security;
+  end hosobenhnhan_on_bacsi_select_security;
 
-  -- policy 3
+  policy 3
   function donvi_on_select_security(owner varchar2, Objname varchar2)
     return varchar2 is
     v_user varchar2(50);
@@ -189,28 +238,28 @@ create or replace public synonym vpd_security_package for vpd_security_package;
 begin
 -- add policy VPD 1
   DBMS_RLS.ADD_POLICY(
-    object_schema => 'benhvien',
+    object_schema => 'system',
     object_name => 'nhanvien',
     policy_name => 'nhanvien_on_select_policy',
-    function_schema => 'benhvien',
+    function_schema => 'system',
     policy_function => 'vpd_security_package.nhanvien_on_select_security',
     statement_types => 'select');
 
 -- add policy VPD 2
   DBMS_RLS.ADD_POLICY(
-    object_schema => 'benhvien',
+    object_schema => 'system',
     object_name => 'hosobenhnhan',
     policy_name => 'hosobenhnhan_on_bacsi_select_policy',
-    function_schema => 'benhvien',
+    function_schema => 'system',
     policy_function => 'vpd_security_package.hosobenhan_on_bacsi_select_security',
     statement_types => 'select');
 
 -- add policy VPD 3
   DBMS_RLS.ADD_POLICY(
-    object_schema => 'benhvien',
+    object_schema => 'system',
     object_name => 'donvi',
     policy_name => 'donvi_on_select_policy',
-    function_schema => 'benhvien',
+    function_schema => 'system',
     policy_function => 'vpd_security_package.donvi_on_select_security',
     statement_types => 'select');
 exception
